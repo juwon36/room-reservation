@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.radiuslab.sample.reserve.Reserve;
+import com.radiuslab.sample.reserve.ReserveRepository;
 import com.radiuslab.sample.room.Room;
 import com.radiuslab.sample.room.RoomRepository;
 import com.radiuslab.sample.roomItem.RoomItem;
@@ -27,6 +29,9 @@ public class entity_외래키_테스트 {
 
 	@Autowired
 	private RoomItemRepository roomItemRepository;
+
+	@Autowired
+	private ReserveRepository reserveRepository;
 
 	@Test
 	public void room_roomItem_join_저장_테스트() {
@@ -86,4 +91,41 @@ public class entity_외래키_테스트 {
 			}
 		}
 	}
+
+	@Test
+	public void room_reserve_join_저장_테스트() {
+		Room room = new Room();
+		room.setRoomName("3회의실");
+		roomRepository.save(room);
+
+		Reserve reserve = new Reserve();
+		reserve.setTitle("2팀 회의");
+		reserve.setRoom(room);
+		reserveRepository.save(reserve);
+
+		List<Room> roomList = roomRepository.findAll();
+		for (Room r : roomList) {
+			LOGGER.info("Room");
+			LOGGER.info("Room ID: " + r.getRoomId());
+			LOGGER.info("Room ID: " + r.getRoomName());
+		}
+
+		List<Reserve> reserveList = reserveRepository.findAll();
+		for (Reserve r : reserveList) {
+			LOGGER.info("Reserve");
+			LOGGER.info("Reserve ID: " + r.getReserveId());
+			LOGGER.info("Reserve ID: " + r.getTitle());
+			LOGGER.info("Room ID: " + r.getRoom().getRoomId());
+		}
+	}
+
+	// @Test
+	// public void room_reserve_join_조회_테스트() {
+	// List<Reserve> roomList = reserveRepository.findAll();
+	// for (Reserve r : roomList) {
+	// LOGGER.info("Room");
+	// LOGGER.info("Room ID: " + r.getReserveId());
+	// LOGGER.info("Room ID: " + r.getTitle());
+	// }
+	// }
 }
