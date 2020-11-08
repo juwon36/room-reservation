@@ -84,7 +84,6 @@ public class entity_외래키_테스트 {
 			LOGGER.info("Room");
 			LOGGER.info("Room ID: " + r.getRoomId());
 			for (RoomItem i : r.getItems()) {
-				LOGGER.info("?!!");
 				LOGGER.info("item id : " + i.getItemId());
 				LOGGER.info("item name : " + i.getItemName());
 				LOGGER.info("item num : " + i.getItemNum());
@@ -118,14 +117,4 @@ public class entity_외래키_테스트 {
 			LOGGER.info("Room ID: " + r.getRoom().getRoomId());
 		}
 	}
-
-	// @Test
-	// public void room_reserve_join_조회_테스트() {
-	// List<Reserve> roomList = reserveRepository.findAll();
-	// for (Reserve r : roomList) {
-	// LOGGER.info("Room");
-	// LOGGER.info("Room ID: " + r.getReserveId());
-	// LOGGER.info("Room ID: " + r.getTitle());
-	// }
-	// }
 }
