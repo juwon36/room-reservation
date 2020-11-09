@@ -3,35 +3,22 @@ package com.radiuslab.sample.reserve;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import com.radiuslab.sample.room.Room;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
-public class Reserve {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ReserveDto {
 	private Long reserveId;
 
-	@ManyToOne
-	@JoinColumn(name = "roomId")
-	private Room room;
+	// private Room room;
+	private Long roomId;
 
 	private String userName;
 	private String userEmail;
