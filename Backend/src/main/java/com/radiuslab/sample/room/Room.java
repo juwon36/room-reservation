@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "room")
+@Entity(name = "Room")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -32,6 +32,6 @@ public class Room {
 	private int capacity;
 
 	@Builder.Default
-	@OneToMany(mappedBy = "room")
+	@OneToMany(mappedBy = "room") // mapperBy를 연결해두지 않으면, 둘을 매핑하는 새로운 테이블이 생성된다.
 	private List<RoomItem> items = new ArrayList<>();
 }
