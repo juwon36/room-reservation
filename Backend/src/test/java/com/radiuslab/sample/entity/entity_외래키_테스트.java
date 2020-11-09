@@ -43,6 +43,7 @@ public class entity_외래키_테스트 {
 		// 회의실과 아이템을 세트로 넣으면 회의실의 id가 아이템 갯수만큼 떠버린다? 어째서??
 		// 그래서 회의실을 먼저 DB에 다 저장을 하고 아이템을 저장해야 한다?? 왜???
 		// @GeneratedValue(strategy = GenerationType.IDENTITY) 이걸 붙이니까 원하는 값이 나오긴 하는데 이해 필요
+
 		Room room = new Room();
 		room.setRoomName("1회의실");
 		roomRepository.save(room);
