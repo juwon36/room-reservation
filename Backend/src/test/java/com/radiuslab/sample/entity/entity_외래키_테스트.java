@@ -1,18 +1,23 @@
 package com.radiuslab.sample.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radiuslab.sample.reserve.Reserve;
+import com.radiuslab.sample.reserve.ReserveDto;
 import com.radiuslab.sample.reserve.ReserveRepository;
 import com.radiuslab.sample.room.Room;
 import com.radiuslab.sample.room.RoomRepository;
@@ -115,6 +120,24 @@ public class entity_외래키_테스트 {
 			LOGGER.info("Reserve ID: " + r.getReserveId());
 			LOGGER.info("Reserve ID: " + r.getTitle());
 			LOGGER.info("Room ID: " + r.getRoom().getRoomId());
+		}
+	}
+
+	@Test
+	public void modelMapper_테스트() throws Exception {
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com").userPassword("0306").userNum(5).title("스터디 회의")//
+				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.build();
+		Reserve entity = new ModelMapper().map(dto, Reserve.class);
+		LOGGER.info(entity.getRoom().toString());
+		LOGGER.info(entity.getRoom().getRoomId().toString());
+	}
+
+	@Test
+	public void test() throws Exception {
+		for (int i = 1; i < 5; i++) {
+			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
+			this.roomRepository.save(room);
 		}
 	}
 }
