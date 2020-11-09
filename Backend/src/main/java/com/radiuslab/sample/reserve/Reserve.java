@@ -18,7 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "Reserve")
+
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -30,14 +31,14 @@ public class Reserve {
 	private Long reserveId;
 
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(name = "roomId")
 	private Room room;
 
 	private String userName;
 	private String userEmail;
 	private String userPassword;
 	private int userNum;
-	private String Title;
+	private String title;
 	private LocalDate reserveDate;
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;

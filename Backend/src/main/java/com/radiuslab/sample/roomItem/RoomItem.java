@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "room_item")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -27,7 +27,7 @@ public class RoomItem {
 	private Long itemId;
 
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(name = "roomId")
 	private Room room;
 
 	private String itemName;
