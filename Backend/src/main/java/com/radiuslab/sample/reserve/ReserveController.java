@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.validation.Valid;
 
@@ -34,6 +35,16 @@ public class ReserveController {
 		if (errors.hasErrors()) {
 			return ResponseEntity.badRequest().body(errors);
 		}
+		if (dto.getReserveDate().isBefore(LocalDate.now())) {
+			// TODO 반환 형식 통일
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("현재 날짜 이전");
+		}
+		if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("현재 시간 이전");
+		}
+		if (dto.getEndTime().isBefore(dto.getStartTime()) || dto.getEndTime().isEqual(dto.getStartTime())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("종료 시간이 시작 시간보다 빠르거나 같음");
+		}
 		Reserve res = this.reserveService.save(dto);
 
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
@@ -54,12 +65,12 @@ public class ReserveController {
 		List<Reserve> reserveList = this.reserveService.findByRoomIdAndYearMonth(roomId, year, month);
 		return new ResponseEntity<List<Reserve>>(reserveList, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("{reserveDate}/{roomId}")
 	public ResponseEntity<List<Reserve>> findByReserveDateAndRoomId(@PathVariable String reserveDate, @PathVariable Long roomId) {
-//		if(roomId<0 || roomId > 4) {
-//			return ResponseEntity.badRequest().body(error);
-//		}
+		// if(roomId<0 || roomId > 4) {
+		// return ResponseEntity.badRequest().body(error);
+		// }
 		List<Reserve> reserveList = this.reserveService.findByReserveDateAndRoomId(reserveDate, roomId);
 		return new ResponseEntity<List<Reserve>>(reserveList, HttpStatus.OK);
 	}

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radiuslab.sample.reserve.Reserve;
 import com.radiuslab.sample.reserve.ReserveDto;
 import com.radiuslab.sample.reserve.ReserveRepository;
