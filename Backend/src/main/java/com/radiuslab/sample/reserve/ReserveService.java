@@ -40,4 +40,26 @@ public class ReserveService {
 		List<Reserve> reserveList = this.reserveRepository.findByReserveDateAndRoomId(date, roomId);
 		return reserveList;
 	}
+
+	public Reserve findByReserveId(Long reserveId) {
+		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
+//		Reserve res = reserve.get();
+//		if (res == null) return null;
+		if(reserve.isPresent()) { // Optional의 null체크
+			return reserve.get();
+		}
+		return null;
+	}
+
+	public Reserve isReserveId(Reserve reserve, String userPassword) {
+		Reserve res = this.findByReserveId(reserve.getReserveId());
+		if (res.getUserPassword().equals(userPassword))
+			return res;
+		//return throws notMatchPasswordException;
+		return null;
+	}
+
+	public void delete(Reserve res) {
+		this.reserveRepository.delete(res);
+	}
 }
