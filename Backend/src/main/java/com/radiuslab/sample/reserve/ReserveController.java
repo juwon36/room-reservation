@@ -29,22 +29,22 @@ public class ReserveController {
 	@Autowired
 	private ReserveService reserveService;
 
+	@Autowired
+	private ReserveTimeValidator reserveTimeValidator;
+
 	// 예약하기
 	@PostMapping
 	public ResponseEntity save(@Valid @RequestBody ReserveDto dto, Errors errors) {
 		if (errors.hasErrors()) {
 			return ResponseEntity.badRequest().body(errors);
 		}
-		if (dto.getReserveDate().isBefore(LocalDate.now())) {
-			// TODO 반환 형식 통일
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("현재 날짜 이전");
+
+		dto.update();
+		this.reserveTimeValidator.validate(dto, errors);
+		if (errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
 		}
-		if (dto.getStartTime().isBefore(LocalDateTime.now())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("현재 시간 이전");
-		}
-		if (dto.getEndTime().isBefore(dto.getStartTime()) || dto.getEndTime().isEqual(dto.getStartTime())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("종료 시간이 시작 시간보다 빠르거나 같음");
-		}
+
 		Reserve res = this.reserveService.save(dto);
 
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();

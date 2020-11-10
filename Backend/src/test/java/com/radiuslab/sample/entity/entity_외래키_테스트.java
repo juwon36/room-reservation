@@ -1,5 +1,7 @@
 package com.radiuslab.sample.entity;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -135,9 +137,18 @@ public class entity_외래키_테스트 {
 
 	@Test
 	public void test() throws Exception {
-		for (int i = 1; i < 5; i++) {
-			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
-			this.roomRepository.save(room);
-		}
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com").userPassword("0306").userNum(5).title("스터디 회의")//
+				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 7, 5, 5)).endTime(LocalDateTime.of(2020, 11, 19, 21, 45, 53))//
+				.build();
+		LOGGER.info(dto.toString());
+		dto.update();
+		LOGGER.info(dto.toString());
+		
+		ReserveDto dto2 = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com").userPassword("0306").userNum(5).title("스터디 회의")//
+				.reserveDate(LocalDate.of(2020, 11, 20)).startTime(LocalDateTime.of(2020, 11, 20, 10, 5, 5)).endTime(LocalDateTime.of(2020, 11, 20, 11, 45, 53))//
+				.build();
+		LOGGER.info(dto2.toString());
+		dto2.update();
+		LOGGER.info(dto2.toString());
 	}
 }
