@@ -18,4 +18,5 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
 	// 회의실 id와 해당날짜에 해당하는 예약 
 	@Query("select rs from Reserve rs, Room rm where rm.roomId = ?2 and rs.reserveDate = ?1")
 	public List<Reserve> findByReserveDateAndRoomId(LocalDate date, Long roomId);
+
 }
