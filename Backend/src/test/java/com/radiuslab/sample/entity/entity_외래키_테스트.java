@@ -21,6 +21,7 @@ import com.radiuslab.sample.reserve.Reserve;
 import com.radiuslab.sample.reserve.ReserveDto;
 import com.radiuslab.sample.reserve.ReserveRepository;
 import com.radiuslab.sample.room.Room;
+import com.radiuslab.sample.room.RoomId;
 import com.radiuslab.sample.room.RoomRepository;
 import com.radiuslab.sample.roomItem.RoomItem;
 import com.radiuslab.sample.roomItem.RoomItemRepository;
@@ -127,8 +128,10 @@ public class entity_외래키_테스트 {
 
 	@Test
 	public void modelMapper_테스트() throws Exception {
-		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com").userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의")//
+				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
+				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
 				.build();
 		Reserve entity = new ModelMapper().map(dto, Reserve.class);
 		LOGGER.info(entity.getRoom().toString());
@@ -137,18 +140,41 @@ public class entity_외래키_테스트 {
 
 	@Test
 	public void test() throws Exception {
-		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com").userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 7, 5, 5)).endTime(LocalDateTime.of(2020, 11, 19, 21, 45, 53))//
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의")//
+				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 7, 5, 5))
+				.endTime(LocalDateTime.of(2020, 11, 19, 21, 45, 53))//
 				.build();
 		LOGGER.info(dto.toString());
 		dto.update();
 		LOGGER.info(dto.toString());
-		
-		ReserveDto dto2 = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com").userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 20)).startTime(LocalDateTime.of(2020, 11, 20, 10, 5, 5)).endTime(LocalDateTime.of(2020, 11, 20, 11, 45, 53))//
+
+		ReserveDto dto2 = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의")//
+				.reserveDate(LocalDate.of(2020, 11, 20)).startTime(LocalDateTime.of(2020, 11, 20, 10, 5, 5))
+				.endTime(LocalDateTime.of(2020, 11, 20, 11, 45, 53))//
 				.build();
 		LOGGER.info(dto2.toString());
 		dto2.update();
 		LOGGER.info(dto2.toString());
+	}
+
+	@Test
+	public void test2() throws Exception {
+		Room room = new Room();
+		room.setRoomName("3회의실");
+		roomRepository.save(room);
+
+		List<Room> list = roomRepository.findAll();
+		for (Room r : list) {
+			LOGGER.info(r.getRoomId() + " : " + r.toString());
+		}
+
+		RoomId roomId = roomRepository.findByRoomId(Long.valueOf(1));
+		LOGGER.info("roomId: " + roomId.getRoomId().toString());
+
+		if (roomRepository.findByRoomId(Long.valueOf(2)) == null) {
+			LOGGER.info("roomId: 2는 없습니다.");
+		}
 	}
 }
