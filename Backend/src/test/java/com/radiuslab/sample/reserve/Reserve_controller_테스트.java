@@ -1,5 +1,7 @@
 package com.radiuslab.sample.reserve;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -15,19 +17,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.Null;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
@@ -51,11 +56,9 @@ import com.radiuslab.sample.room.Room;
 import com.radiuslab.sample.room.RoomRepository;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/test" }) // @SpringBootTest에서
-																								// 다른
-																								// db를
-																								// 사용하겠다
+@SpringBootTest(properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/radius_test" })
 @AutoConfigureMockMvc
+@TestInstance(Lifecycle.PER_CLASS)
 public class Reserve_controller_테스트 {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(Reserve_controller_테스트.class);
 
@@ -80,15 +83,16 @@ public class Reserve_controller_테스트 {
 
 	private Room room1, room2;
 
-	@BeforeEach
+	@BeforeAll
 	public void 데이터_셋업() throws Exception {
-		room1 = new Room();
-		room1.setRoomName("1회의실");
-		roomRepository.save(room1);
-
-		room2 = new Room();
-		room2.setRoomName("2회의실");
-		roomRepository.save(room2);
+		List<Room> list = new ArrayList<>();
+		for (int i = 1; i < 5; i++) {
+			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
+			list.add(room);
+		}
+		this.roomRepository.saveAll(list);
+		this.room1 = list.get(0);
+		this.room2 = list.get(1);
 	}
 
 	@BeforeEach
@@ -101,10 +105,8 @@ public class Reserve_controller_테스트 {
 				.alwaysDo(print()) // 항상 내용 출력
 				.build();
 
-		// 회의실 초기화
-		for (int i = 1; i < 5; i++) {
-			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
-			this.roomRepository.save(room);
+		for (Room r : this.roomRepository.findAll()) {
+			LOGGER.info(r.getRoomId().toString() + " : " + r.getRoomName());
 		}
 	}
 
@@ -121,9 +123,8 @@ public class Reserve_controller_테스트 {
 	@DisplayName("예약하기 성공")
 	public void save_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -131,6 +132,13 @@ public class Reserve_controller_테스트 {
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isCreated())//
 				.andExpect(jsonPath("reserveId").exists());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().hasSize(1);
+		Reserve res = list.get(0);
+		// reserveId, room, endTime 외에 다른 필드는 전부 같은 값이여야 한다
+		assertThat(res).isNotNull().isEqualToIgnoringGivenFields(dto, "reserveId", "room", "endTime");
+		assertThat(res.getRoom().getRoomId()).isEqualTo(dto.getRoomId());
 	}
 
 	// - 데이터가 하나라도 누락(null이나 "")될 경우 → 400에러
@@ -162,9 +170,8 @@ public class Reserve_controller_테스트 {
 	@DisplayName("예약 불가 - roomId가 회의실테이블에 없을 경우")
 	public void save_예약불가_roomId_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(10)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -180,9 +187,8 @@ public class Reserve_controller_테스트 {
 	@ValueSource(strings = { "juwon12radiuslabcom", "juwonradiuslab.com" })
 	public void save_bad_request_input_email_테스트(String email) throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(10)).userName("정주원").userEmail(email)
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -197,9 +203,8 @@ public class Reserve_controller_테스트 {
 	@DisplayName("예약하기 Bad Request - password")
 	public void save_bad_request_input_password_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("as1").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.userPassword("as1").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -234,9 +239,8 @@ public class Reserve_controller_테스트 {
 	@ValueSource(strings = { "2020-11-01", "2020-10-30" })
 	public void save_예약불가_reserveDate_테스트(LocalDate reserveDate) throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(reserveDate).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(reserveDate)
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -254,10 +258,8 @@ public class Reserve_controller_테스트 {
 	@ValueSource(strings = { "2020-11-09T10:30:00", "2020-11-09T11:30:00" })
 	public void save_예약불가_startTime_테스트(LocalDateTime startTime) throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(startTime)
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
-				.build();
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(startTime).endTime(LocalDateTime.of(2020, 11, 19, 16, 00)).build();
 
 		this.mockMvc.perform(post(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
@@ -272,25 +274,42 @@ public class Reserve_controller_테스트 {
 																									// 겹침
 	public void save_예약불가_예약_시간_겹침_테스트(LocalDateTime startTime) throws Exception {
 		// 비교할 예약 2020-11-19 1시부터 4시까지
-		ReserveDto reserve = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 13, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+		Reserve reserve = Reserve.builder().room(room1).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 13, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
-		this.mockMvc.perform(post(this.API_URL)//
-				.contentType(MediaType.APPLICATION_JSON)//
-				.content(objectMapper.writeValueAsString(reserve)))//
-				.andExpect(status().isCreated());
+		this.reserveRepository.save(reserve);
 
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(startTime).endTime(startTime.plusHours(2))//
-				.build();
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(startTime).endTime(startTime.plusHours(2)).build();
 
 		this.mockMvc.perform(post(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+	}
+
+	// 3-1. 성공인 경우
+	@ParameterizedTest
+	@DisplayName("예약 성공 - 경계 시간")
+	@ValueSource(strings = { "2020-11-19T11:00:00", "2020-11-19T16:00:00" }) // 종료시간 겹침, 포함, 시작시간 겹침
+	public void save_예약_시간_겹침_테스트(LocalDateTime startTime) throws Exception {
+		// 비교할 예약 2020-11-19 1시부터 4시까지
+		Reserve reserve = Reserve.builder().room(room1).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 13, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
+				.build();
+		this.reserveRepository.save(reserve);
+
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(startTime).endTime(startTime.plusHours(2)).build();
+
+		this.mockMvc.perform(post(this.API_URL)//
+				.contentType(MediaType.APPLICATION_JSON)//
+				.content(objectMapper.writeValueAsString(dto)))//
+				.andExpect(status().isCreated());
 	}
 
 	// 4. endTime이 startTime보다 빠른 시간일 경우 → 예약 불가
@@ -299,9 +318,23 @@ public class Reserve_controller_테스트 {
 	@ValueSource(strings = { "2020-11-19T12:00:00", "2020-11-19T13:30:00", "2020-11-19T15:00:00" })
 	public void save_예약불가_예약_시간_start_end_테스트(LocalDateTime startTime) throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(startTime).endTime(startTime.plusHours(2))//
-				.build();
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(startTime).endTime(startTime.minusHours(2)).build();
+
+		this.mockMvc.perform(post(this.API_URL)//
+				.contentType(MediaType.APPLICATION_JSON)//
+				.content(objectMapper.writeValueAsString(dto)))//
+				.andExpect(status().isConflict());
+	}
+
+	// 4-1. endTime이 startTime과 같을 경우 → 예약 불가
+	@ParameterizedTest
+	@DisplayName("예약 불가 - endTime이 startTime과 같을 경우")
+	@ValueSource(strings = { "2020-11-19T12:00:00", "2020-11-19T13:30:00", "2020-11-19T15:00:00" })
+	public void save_예약불가_예약_시간_start_end__테스트(LocalDateTime startTime) throws Exception {
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(startTime).endTime(startTime).build();
 
 		this.mockMvc.perform(post(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
@@ -314,9 +347,8 @@ public class Reserve_controller_테스트 {
 	@DisplayName("예약하기 성공 - endTime 자동변경")
 	public void save_endTime_변경_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 21, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 21, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -332,9 +364,8 @@ public class Reserve_controller_테스트 {
 	@DisplayName("예약하기 성공 - startTime 자동변경")
 	public void save_startTime_변경_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 07, 00))
-				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 07, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
 		this.mockMvc.perform(post(this.API_URL)//
@@ -348,12 +379,26 @@ public class Reserve_controller_테스트 {
 	// 7. startTime과 endTime의 날짜가 다를 경우
 	@Test
 	@DisplayName("예약 불가 - startTime과 endTime의 날짜가 다를 경우")
-	public void save_bad_request_예약_시간_날짜_다름_테스트() throws Exception {
+	public void save_예약불가_예약_시간_날짜_다름_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
-				.userPassword("0306").userNum(5).title("스터디 회의")//
-				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
-				.endTime(LocalDateTime.of(2020, 11, 20, 16, 00))//
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 20, 16, 00))
 				.build();
+
+		this.mockMvc.perform(post(this.API_URL)//
+				.contentType(MediaType.APPLICATION_JSON)//
+				.content(objectMapper.writeValueAsString(dto)))//
+				.andExpect(status().isConflict());
+	}
+
+	// 8. 시간이 30분 단위로 들어오지 않았을 경우
+	@ParameterizedTest
+	@DisplayName("예약 불가 - 시간이 30분 단위로 들어오지 않았을 경우")
+	@ValueSource(strings = { "2020-11-19T12:42:53", "2020-11-19T13:01:50", "2020-11-19T15:54:45" })
+	public void save_예약불가_시간_블록_테스트(LocalDateTime startTime) throws Exception {
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(startTime).endTime(startTime.plusHours(1).minusMinutes(30)).build();
 
 		this.mockMvc.perform(post(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
