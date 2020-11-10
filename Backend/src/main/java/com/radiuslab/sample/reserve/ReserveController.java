@@ -1,31 +1,24 @@
 package com.radiuslab.sample.reserve;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.radiuslab.sample.room.RoomRepository;
 
 @RestController
 @RequestMapping("/api/reserve")
@@ -34,14 +27,14 @@ public class ReserveController {
 	private ReserveService reserveService;
 
 	@Autowired
-	private RoomRepository roomRepository;
+	private ReserveTimeValidator reserveTimeValidator;
 
 	@Autowired
-	private ReserveTimeValidator reserveTimeValidator;
+	private ReserveValidator reserveValidator;
 
 	// 예약하기
 	@PostMapping
-	public ResponseEntity save(@Valid @RequestBody ReserveDto dto, Errors errors) {
+	public ResponseEntity<Object> save(@Valid @RequestBody ReserveDto dto, Errors errors) {
 		if (errors.hasErrors()) {
 			return ResponseEntity.badRequest().body(errors);
 		}
@@ -52,22 +45,9 @@ public class ReserveController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
 		}
 
-		if (this.roomRepository.findByRoomId(dto.getRoomId()) == null) {
-			errors.rejectValue("roomId", "WrongRoomId", "예약하려는 회의실이 없는 회의실입니다.");
+		this.reserveValidator.validate(dto, errors);
+		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
-		}
-		List<Reserve> list = this.reserveService.findByReserveDateAndRoomId(dto.getReserveDate().toString(),
-				dto.getRoomId());
-		for (Reserve r : list) {
-			if (dto.getStartTime().isAfter(r.getStartTime()) && dto.getStartTime().isBefore(r.getEndTime())) {
-				errors.rejectValue("startTime", "OverlapTime", "다른 예약과 겹치는 시간 입니다.");
-			}
-			if (dto.getEndTime().isAfter(r.getStartTime()) && dto.getEndTime().isBefore(r.getEndTime())) {
-				errors.rejectValue("endTime", "OverlapTime", "다른 예약과 겹치는 시간 입니다.");
-			}
-			if (errors.hasErrors()) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
-			}
 		}
 
 		Reserve res = this.reserveService.save(dto);
@@ -103,13 +83,13 @@ public class ReserveController {
 
 	// 예약취소
 	@DeleteMapping("{reserveId}")
-	public ResponseEntity delete(@RequestParam(name="reserveId") Long reserveId, @RequestParam String userPassword) {
+	public ResponseEntity delete(@RequestParam(name = "reserveId") Long reserveId, @RequestParam String userPassword) {
 		Reserve res = reserveService.findByReserveId(reserveId);
-		if(res == null) {
+		if (res == null) {
 			return ResponseEntity.badRequest().body("삭제하려는 예약이 존재하지 않습니다.");
 		}
 		Reserve checkedReserve = reserveService.isReserveId(res, userPassword);
-		this.reserveService.delete(checkedReserve);			
+		this.reserveService.delete(checkedReserve);
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
 		return ResponseEntity.created(uri).body(res);
 	}

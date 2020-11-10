@@ -2,12 +2,11 @@ package com.radiuslab.sample.reserve;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.radiuslab.sample.room.RoomRepository;
 
 @Service
 public class ReserveService {
@@ -45,7 +44,7 @@ public class ReserveService {
 		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
 //		Reserve res = reserve.get();
 //		if (res == null) return null;
-		if(reserve.isPresent()) { // Optional의 null체크
+		if (reserve.isPresent()) { // Optional의 null체크
 			return reserve.get();
 		}
 		return null;
@@ -55,7 +54,7 @@ public class ReserveService {
 		Reserve res = this.findByReserveId(reserve.getReserveId());
 		if (res.getUserPassword().equals(userPassword))
 			return res;
-		//return throws notMatchPasswordException;
+		// return throws notMatchPasswordException;
 		return null;
 	}
 

@@ -1,15 +1,9 @@
 package com.radiuslab.sample.reserve;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,8 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.validation.constraints.Null;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +26,6 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +35,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -565,7 +555,7 @@ public class Reserve_controller_테스트 {
 		reserveRepository.save(reserve2);
 
 		mockMvc.perform(get(this.API_URL + "/2020-11-08/1")).andDo(print()).andExpect(status().isOk())//
-		.andExpect(jsonPath("$[0].reserveDate").value(Matchers.is("2020-11-08")));
+				.andExpect(jsonPath("$[0].reserveDate").value(Matchers.is("2020-11-08")));
 	}
 
 	// 일간조회 성공 - 아무예약이 없으면 빈 리스트 리턴
@@ -667,7 +657,7 @@ public class Reserve_controller_테스트 {
 
 	}
 
-	// @Disabled// java.lang.IllegalArgumentException: Entity must not be null!
+	@Disabled // java.lang.IllegalArgumentException: Entity must not be null!
 	// 에러
 	// 발생... 처리는 어떻게 하죠..
 	@Test
