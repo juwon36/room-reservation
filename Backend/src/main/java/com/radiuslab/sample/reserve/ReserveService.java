@@ -36,13 +36,12 @@ public class ReserveService {
 		Reserve res = this.reserveRepository.save(reserve);
 		return res;
 	}
-  
+
 	public List<Reserve> findByReserveDate(String reserveDate) {
-		LocalDate date = LocalDate.parse(reserveDate );
+		LocalDate date = LocalDate.parse(reserveDate);
 		List<Reserve> reserveList = this.reserveRepository.findByReserveDate(date);
 		return reserveList;
 	}
-
 
 	public List<Reserve> findByRoomIdAndYearMonth(String roomId, String year, String month) {
 		Long longRoomId = (long) Integer.parseInt(roomId);
@@ -50,10 +49,31 @@ public class ReserveService {
 		return reserveList;
 	}
 
-
 	public List<Reserve> findByReserveDateAndRoomId(String reserveDate, Long roomId) {
 		LocalDate date = LocalDate.parse(reserveDate);
 		List<Reserve> reserveList = this.reserveRepository.findByReserveDateAndRoomId(date, roomId);
 		return reserveList;
+	}
+
+	public Reserve findByReserveId(Long reserveId) {
+		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
+//		Reserve res = reserve.get();
+//		if (res == null) return null;
+		if(reserve.isPresent()) { // Optional의 null체크
+			return reserve.get();
+		}
+		return null;
+	}
+
+	public Reserve isReserveId(Reserve reserve, String userPassword) {
+		Reserve res = this.findByReserveId(reserve.getReserveId());
+		if (res.getUserPassword().equals(userPassword))
+			return res;
+		//return throws notMatchPasswordException;
+		return null;
+	}
+
+	public void delete(Reserve res) {
+		this.reserveRepository.delete(res);
 	}
 }
