@@ -74,7 +74,7 @@ public class Reserve_controller_테스트 {
 	private Room room1, room2;
 
 	@BeforeAll
-	public void 데이터_셋업() throws Exception {
+	public void 데이터_셋업() {
 		List<Room> list = new ArrayList<>();
 		for (int i = 1; i < 5; i++) {
 			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
@@ -88,10 +88,6 @@ public class Reserve_controller_테스트 {
 	@BeforeEach
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글
-																														// 깨짐
-																														// 방지
-																														// 필터
-																														// 추가
 				.alwaysDo(print()) // 항상 내용 출력
 				.build();
 
@@ -103,7 +99,6 @@ public class Reserve_controller_테스트 {
 	@AfterEach
 	public void delete() {
 		this.reserveRepository.deleteAll();
-		// this.roomRepository.deleteAll();
 	}
 
 	// juwon
@@ -124,11 +119,11 @@ public class Reserve_controller_테스트 {
 				.andExpect(jsonPath("reserveId").exists());
 
 		List<Reserve> list = this.reserveRepository.findAll();
+		// list가 null이 아니고 size가 1이여야 한다
 		assertThat(list).isNotNull().hasSize(1);
-		Reserve res = list.get(0);
-		// reserveId, room, endTime 외에 다른 필드는 전부 같은 값이여야 한다
-		assertThat(res).isNotNull().isEqualToIgnoringGivenFields(dto, "reserveId", "room", "endTime");
-		assertThat(res.getRoom().getRoomId()).isEqualTo(dto.getRoomId());
+		// reserveId, room, endTime 외에 다른 이름이 같은 필드는 전부 같은 값이여야 한다
+		assertThat(list.get(0)).isNotNull().isEqualToIgnoringGivenFields(dto, "reserveId", "room", "endTime");
+		assertThat(list.get(0).getRoom().getRoomId()).isEqualTo(dto.getRoomId());
 	}
 
 	// - 데이터가 하나라도 누락(null이나 "")될 경우 → 400에러
@@ -141,6 +136,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();// null이 아니고 빈 리스트여야 한다
 	}
 
 	@Test
@@ -152,6 +150,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// - roomId
@@ -168,6 +169,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// - userEmail
@@ -185,6 +189,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// - userPassword
@@ -201,6 +208,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// - userNum
@@ -218,6 +228,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// - reserveDate
@@ -237,6 +250,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// - startTime, endTime
@@ -255,13 +271,16 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// 3. 같은 회의실의 다른 예약과 겹칠 경우 → 예약 불가
 	@ParameterizedTest
 	@DisplayName("예약 불가 - 다른 예약과 겹칠 경우")
-	@ValueSource(strings = { "2020-11-19T12:00:00", "2020-11-19T13:30:00", "2020-11-19T15:00:00" }) // 종료시간 겹침, 포함, 시작시간
-																									// 겹침
+	// 종료시간 겹침, 포함, 시작시간 겹침
+	@ValueSource(strings = { "2020-11-19T12:00:00", "2020-11-19T13:00:00", "2020-11-19T15:00:00" })
 	public void save_예약불가_예약_시간_겹침_테스트(LocalDateTime startTime) throws Exception {
 		// 비교할 예약 2020-11-19 1시부터 4시까지
 		Reserve reserve = Reserve.builder().room(room1).userName("정주원").userEmail("juwon@gmail.com")
@@ -272,12 +291,16 @@ public class Reserve_controller_테스트 {
 
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정주원").userEmail("juwon@gmail.com")
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
-				.startTime(startTime).endTime(startTime.plusHours(2)).build();
+				.startTime(startTime).endTime(startTime.plusHours(3)).build();
 
 		this.mockMvc.perform(post(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().hasSize(1);
+		assertThat(list.get(0)).isEqualToIgnoringGivenFields(reserve, "room");
 	}
 
 	// 3-1. 성공인 경우
@@ -300,6 +323,12 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isCreated());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().hasSize(2);
+		assertThat(list.get(0)).isEqualToIgnoringGivenFields(reserve, "room");
+		assertThat(list.get(1)).isEqualToIgnoringGivenFields(dto, "reserveId", "room", "endTime");
+		assertThat(list.get(0).getRoom().getRoomId()).isEqualTo(dto.getRoomId());
 	}
 
 	// 4. endTime이 startTime보다 빠른 시간일 경우 → 예약 불가
@@ -315,6 +344,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// 4-1. endTime이 startTime과 같을 경우 → 예약 불가
@@ -330,6 +362,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// 5. endTime이 오후 8시이후 → 오후 8시로 변경
@@ -379,6 +414,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// 8. 시간이 30분 단위로 들어오지 않았을 경우
@@ -394,6 +432,9 @@ public class Reserve_controller_테스트 {
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
+
+		List<Reserve> list = this.reserveRepository.findAll();
+		assertThat(list).isNotNull().isEmpty();
 	}
 
 	// 예약수정 테스트
