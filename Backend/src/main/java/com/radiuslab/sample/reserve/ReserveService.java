@@ -40,12 +40,14 @@ public class ReserveService {
 		return reserveList;
 	}
 
-	public Reserve findByReserveId(Long reserveId) throws IllegalArgumentException {
+	public Reserve findByReserveId(Long reserveId) {
 		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
-		if (!reserve.isPresent()) { // Optional의 null체크
-			return null;
+		// Reserve res = reserve.get();
+		// if (res == null) return null;
+		if (reserve.isPresent()) { // Optional의 null체크
+			return reserve.get();
 		}
-		return reserve.get();
+		return null;
 	}
 
 	public Reserve isReserveId(Reserve reserve, String userPassword) {
