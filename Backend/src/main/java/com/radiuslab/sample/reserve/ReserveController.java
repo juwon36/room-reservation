@@ -15,10 +15,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.radiuslab.sample.reserve.validator.ReserveTimeValidator;
+import com.radiuslab.sample.reserve.validator.ReserveValidator;
 
 @RestController
 @RequestMapping("/api/reserve")
@@ -57,6 +61,10 @@ public class ReserveController {
 	}
 
 	// 예약수정
+	@PutMapping
+	public ResponseEntity update(@Valid @RequestBody ReserveDto dto, Errors errors) {
+		return null;
+	}
 
 	// 예약조회
 	@GetMapping("{reserveDate}")

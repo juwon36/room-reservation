@@ -1,7 +1,7 @@
 package com.radiuslab.sample.reserve;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,11 +39,11 @@ import com.radiuslab.sample.room.Room;
 import com.radiuslab.sample.room.RoomRepository;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/radius_test" })
+@SpringBootTest(properties = { "spring.datasource.url=jdbc:putgresql://localhost:5432/radius_test" })
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
-public class ReserveController_juwon_테스트 {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(ReserveController_juwon_테스트.class);
+public class ReserveController_update_테스트 {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ReserveController_update_테스트.class);
 
 	private String API_URL = "/api/reserve";
 
@@ -61,13 +61,10 @@ public class ReserveController_juwon_테스트 {
 	@Autowired
 	private ReserveRepository reserveRepository;
 
-	@Autowired
-	private ReserveService reserveService;
-
 	private Room room1, room2;
 
 	@BeforeAll
-	public void 데이터_셋업() {
+	public void insert() {
 		List<Room> list = new ArrayList<>();
 		for (int i = 1; i < 5; i++) {
 			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
@@ -76,13 +73,18 @@ public class ReserveController_juwon_테스트 {
 		this.roomRepository.saveAll(list);
 		this.room1 = list.get(0);
 		this.room2 = list.get(1);
+
+		Reserve reserve = Reserve.builder().room(room1).userName("정주원").userEmail("juwon@gmail.com")
+				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
+				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
+				.build();
+		this.reserveRepository.save(reserve);
 	}
 
 	@BeforeEach
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilters(new CharacterEncodingFilter("UTF-8", true))
-				.alwaysDo(print()) // 항상 내용 출력
-				.build();
+				.alwaysDo(print()).build();
 
 		for (Room r : this.roomRepository.findAll()) {
 			LOGGER.info(r.getRoomId().toString() + " : " + r.getRoomName());
@@ -94,8 +96,7 @@ public class ReserveController_juwon_테스트 {
 		this.reserveRepository.deleteAll();
 	}
 
-	// juwon
-	// 예약하기 테스트
+	// 예약수정 테스트
 	// - 예약 성공
 	@Test
 	@DisplayName("예약하기 성공")
@@ -105,7 +106,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isCreated())//
@@ -125,7 +126,7 @@ public class ReserveController_juwon_테스트 {
 	public void save_bad_request_input_null_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
@@ -139,7 +140,7 @@ public class ReserveController_juwon_테스트 {
 	public void save_bad_request_input_empty_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().userName("").userEmail("").userPassword("").title("").build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
@@ -158,7 +159,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -178,7 +179,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
@@ -197,7 +198,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
@@ -217,7 +218,7 @@ public class ReserveController_juwon_테스트 {
 				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00))//
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isBadRequest());
@@ -239,7 +240,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -260,7 +261,7 @@ public class ReserveController_juwon_테스트 {
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
 				.startTime(startTime).endTime(LocalDateTime.of(2020, 11, 19, 16, 00)).build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -286,7 +287,7 @@ public class ReserveController_juwon_테스트 {
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
 				.startTime(startTime).endTime(startTime.plusHours(3)).build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -312,7 +313,7 @@ public class ReserveController_juwon_테스트 {
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
 				.startTime(startTime).endTime(startTime.plusHours(2)).build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isCreated());
@@ -333,7 +334,7 @@ public class ReserveController_juwon_테스트 {
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
 				.startTime(startTime).endTime(startTime.minusHours(2)).build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -351,7 +352,7 @@ public class ReserveController_juwon_테스트 {
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
 				.startTime(startTime).endTime(startTime).build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -369,7 +370,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 19, 21, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isCreated())//
@@ -386,7 +387,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 07, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isCreated())//
@@ -403,7 +404,7 @@ public class ReserveController_juwon_테스트 {
 				.startTime(LocalDateTime.of(2020, 11, 19, 15, 00)).endTime(LocalDateTime.of(2020, 11, 20, 16, 00))
 				.build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -421,7 +422,7 @@ public class ReserveController_juwon_테스트 {
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
 				.startTime(startTime).endTime(startTime.plusHours(1).minusMinutes(30)).build();
 
-		this.mockMvc.perform(post(this.API_URL)//
+		this.mockMvc.perform(put(this.API_URL)//
 				.contentType(MediaType.APPLICATION_JSON)//
 				.content(objectMapper.writeValueAsString(dto)))//
 				.andExpect(status().isConflict());
@@ -429,40 +430,4 @@ public class ReserveController_juwon_테스트 {
 		List<Reserve> list = this.reserveRepository.findAll();
 		assertThat(list).isNotNull().isEmpty();
 	}
-
-	// 예약수정 테스트
-	// - 예약수정 성공
-
-	// - 데이터가 하나라도 누락(null이나 "")될 경우 → 400에러
-
-	// - roomId
-	// 1. 회의실테이블에 해당값이 없을 경우 → 수정 불가
-
-	// - userEmail
-	// 1. 이메일 형식이 아닐 경우 → 400에러
-
-	// - userPassword
-	// 1. 4글자 보다 작은 경우 → 400에러
-
-	// - userNum
-	// 1. 0보다 작은 값이 들어왔을 경우 → 400에러
-
-	// - reserveDate
-	// 1. 포멧(yyyy-MM-dd)이 맞지 않을 경우 → 400에러
-
-	// 2. 현재 날짜 이전인 경우 → 수정 불가
-
-	// - startTime, endTime
-	// 1. 포멧(yyyy-MM-dd HH:mm:ss)이 맞지 않을 경우 → 400에러
-
-	// 2. 현재 시간 이전일 경우 →수정 불가
-
-	// 3. 같은 회의실의 다른 예약과 겹칠 경우 → 수정 불가
-
-	// 4. endTime이 startTime보다 빠른 시간일 경우 → 수정 불가
-
-	// 5. startTime과 endTime이 12시간 이상 차이날경우 → 가능한 마지막 시간으로 변경
-
-	// - 현재 시간이 수정 하려는 예약의 startTime보다 지났을 경우 → 수정 불가
-
 }

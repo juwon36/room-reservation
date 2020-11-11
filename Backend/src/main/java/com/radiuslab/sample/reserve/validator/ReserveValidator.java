@@ -1,4 +1,4 @@
-package com.radiuslab.sample.reserve;
+package com.radiuslab.sample.reserve.validator;
 
 import java.util.List;
 
@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
+import com.radiuslab.sample.reserve.Reserve;
+import com.radiuslab.sample.reserve.ReserveDto;
+import com.radiuslab.sample.reserve.ReserveRepository;
 import com.radiuslab.sample.room.RoomRepository;
 
 @Component

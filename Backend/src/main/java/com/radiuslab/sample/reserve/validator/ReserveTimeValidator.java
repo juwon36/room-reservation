@@ -1,10 +1,12 @@
-package com.radiuslab.sample.reserve;
+package com.radiuslab.sample.reserve.validator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+
+import com.radiuslab.sample.reserve.ReserveDto;
 
 @Component
 public class ReserveTimeValidator {
