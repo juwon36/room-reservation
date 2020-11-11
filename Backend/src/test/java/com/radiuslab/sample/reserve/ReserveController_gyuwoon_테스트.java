@@ -48,7 +48,7 @@ import com.radiuslab.sample.room.RoomRepository;
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 public class ReserveController_gyuwoon_테스트 {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(Reserve_controller_테스트.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ReserveController_gyuwoon_테스트.class);
 
 	private String API_URL = "/api/reserve";
 

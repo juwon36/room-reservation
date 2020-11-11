@@ -41,7 +41,7 @@ public class ReserveService {
 	}
 
 	public Reserve findByReserveId(Long reserveId) {
-		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId)
+		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
 		// Reserve res = reserve.get();
 		// if (res == null) return null;
 		if (reserve.isPresent()) { // Optional의 null체크
