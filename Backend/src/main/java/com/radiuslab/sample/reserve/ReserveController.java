@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/reserve")
 public class ReserveController {
+	Logger LOGGER = LoggerFactory.getLogger(ReserveController.class);
 	@Autowired
 	private ReserveService reserveService;
 
@@ -83,17 +86,42 @@ public class ReserveController {
 
 	// 예약취소
 	@DeleteMapping("{reserveId}")
-	public ResponseEntity delete(@RequestParam(name = "reserveId") Long reserveId, @RequestParam String userPassword) {
-		Reserve res = reserveService.findByReserveId(reserveId);
-		if (res == null) {
-			return ResponseEntity.badRequest().body("삭제하려는 예약이 존재하지 않습니다.");
+	public ResponseEntity delete(@Valid @RequestBody PassCheckDto passCheckDto, Errors error) {
+		LOGGER.info("reserveId = " + passCheckDto.getReserveId() + ", password = " + passCheckDto.getUserPassword());
+		if (error.hasErrors()) {
+			return ResponseEntity.badRequest().body("삭제하려는 예약번호나 비밀번호가 존재하지 않습니다.");
 		}
-		Reserve checkedReserve = reserveService.isReserveId(res, userPassword);
+		// TODO 수정 필요 -> 예외처리,,
+		Reserve res;
+		try {
+			res = reserveService.findByReserveId(passCheckDto.getReserveId());
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("없는 예약번호 입니다.");
+		}
+
+		Reserve checkedReserve = reserveService.isReserveId(res, passCheckDto.getUserPassword());
 		this.reserveService.delete(checkedReserve);
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
 		return ResponseEntity.created(uri).body(res);
 	}
 
 	// 비밀번호 확인
+	@PostMapping("/checkpw")
+	public ResponseEntity checkPassword(@Valid @RequestBody PassCheckDto passCheckDto, Errors error) {
+		if (error.hasErrors()) {
+			return ResponseEntity.badRequest().body("예약번호 또는 비밀번호를 확인하세요");
+		}
 
+		Reserve res = reserveService.findByReserveId(passCheckDto.getReserveId());
+		if (res == null)
+			return ResponseEntity.badRequest().body("존재하지 않는 예약번호 입니다.");
+
+		Reserve checkedReserve = reserveService.isReserveId(res, passCheckDto.getUserPassword());
+		if (checkedReserve == null) {
+			return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
+		}
+		
+		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
+		return ResponseEntity.created(uri).body(res);
+	}
 }
