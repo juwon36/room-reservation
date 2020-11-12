@@ -211,7 +211,7 @@ public class ReserveController_update_테스트 {
 	@Test
 	@DisplayName("예약 불가 - roomId가 회의실테이블에 없을 경우")
 	public void update_예약불가_roomId_테스트() throws Exception {
-		ReserveDto dto = ReserveDto.builder().reserveId(reserve1.getReserveId()).roomId(Long.valueOf(10))
+		ReserveDto dto = ReserveDto.builder().reserveId(reserve1.getReserveId()).roomId(Long.valueOf(100))
 				.userName("정겨운").userEmail("gyuwoon@gmail.com").userPassword("gyuwoon").userNum(6).title("스터디 주간 회의")
 				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
 				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00)).build();
