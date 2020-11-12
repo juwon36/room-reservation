@@ -42,8 +42,8 @@ import com.radiuslab.sample.room.RoomRepository;
 @SpringBootTest(properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/radius_test" })
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
-public class ReserveController_juwon_테스트 {
-	protected static final Logger LOGGER = LoggerFactory.getLogger(ReserveController_juwon_테스트.class);
+public class ReserveController_save_테스트 {
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ReserveController_save_테스트.class);
 
 	private String API_URL = "/api/reserve";
 
@@ -61,13 +61,10 @@ public class ReserveController_juwon_테스트 {
 	@Autowired
 	private ReserveRepository reserveRepository;
 
-	@Autowired
-	private ReserveService reserveService;
-
 	private Room room1, room2;
 
 	@BeforeAll
-	public void 데이터_셋업() {
+	public void insert() {
 		List<Room> list = new ArrayList<>();
 		for (int i = 1; i < 5; i++) {
 			Room room = Room.builder().roomName(i + "회의실").capacity(i * 3).build();
@@ -81,8 +78,7 @@ public class ReserveController_juwon_테스트 {
 	@BeforeEach
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilters(new CharacterEncodingFilter("UTF-8", true))
-				.alwaysDo(print()) // 항상 내용 출력
-				.build();
+				.alwaysDo(print()).build();
 
 		for (Room r : this.roomRepository.findAll()) {
 			LOGGER.info(r.getRoomId().toString() + " : " + r.getRoomName());
@@ -94,7 +90,6 @@ public class ReserveController_juwon_테스트 {
 		this.reserveRepository.deleteAll();
 	}
 
-	// juwon
 	// 예약하기 테스트
 	// - 예약 성공
 	@Test
@@ -278,7 +273,7 @@ public class ReserveController_juwon_테스트 {
 		// 비교할 예약 2020-11-19 1시부터 4시까지
 		Reserve reserve = Reserve.builder().room(room1).userName("정주원").userEmail("juwon@gmail.com")
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
-				.startTime(LocalDateTime.of(2020, 11, 19, 13, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
+				.startTime(LocalDateTime.of(2020, 11, 19, 13, 00)).endTime(LocalDateTime.of(2020, 11, 19, 15, 59))
 				.build();
 		this.reserveRepository.save(reserve);
 
@@ -294,6 +289,7 @@ public class ReserveController_juwon_테스트 {
 		List<Reserve> list = this.reserveRepository.findAll();
 		assertThat(list).isNotNull().hasSize(1);
 		assertThat(list.get(0)).isEqualToIgnoringGivenFields(reserve, "room");
+		assertThat(list.get(0).getRoom().getRoomId()).isEqualTo(room1.getRoomId());
 	}
 
 	// 3-1. 성공인 경우
@@ -304,7 +300,7 @@ public class ReserveController_juwon_테스트 {
 		// 비교할 예약 2020-11-19 1시부터 4시까지
 		Reserve reserve = Reserve.builder().room(room1).userName("정주원").userEmail("juwon@gmail.com")
 				.userPassword("0306").userNum(5).title("스터디 회의").reserveDate(LocalDate.of(2020, 11, 19))
-				.startTime(LocalDateTime.of(2020, 11, 19, 13, 00)).endTime(LocalDateTime.of(2020, 11, 19, 16, 00))
+				.startTime(LocalDateTime.of(2020, 11, 19, 13, 00)).endTime(LocalDateTime.of(2020, 11, 19, 15, 59))
 				.build();
 		this.reserveRepository.save(reserve);
 
@@ -429,40 +425,4 @@ public class ReserveController_juwon_테스트 {
 		List<Reserve> list = this.reserveRepository.findAll();
 		assertThat(list).isNotNull().isEmpty();
 	}
-
-	// 예약수정 테스트
-	// - 예약수정 성공
-
-	// - 데이터가 하나라도 누락(null이나 "")될 경우 → 400에러
-
-	// - roomId
-	// 1. 회의실테이블에 해당값이 없을 경우 → 수정 불가
-
-	// - userEmail
-	// 1. 이메일 형식이 아닐 경우 → 400에러
-
-	// - userPassword
-	// 1. 4글자 보다 작은 경우 → 400에러
-
-	// - userNum
-	// 1. 0보다 작은 값이 들어왔을 경우 → 400에러
-
-	// - reserveDate
-	// 1. 포멧(yyyy-MM-dd)이 맞지 않을 경우 → 400에러
-
-	// 2. 현재 날짜 이전인 경우 → 수정 불가
-
-	// - startTime, endTime
-	// 1. 포멧(yyyy-MM-dd HH:mm:ss)이 맞지 않을 경우 → 400에러
-
-	// 2. 현재 시간 이전일 경우 →수정 불가
-
-	// 3. 같은 회의실의 다른 예약과 겹칠 경우 → 수정 불가
-
-	// 4. endTime이 startTime보다 빠른 시간일 경우 → 수정 불가
-
-	// 5. startTime과 endTime이 12시간 이상 차이날경우 → 가능한 마지막 시간으로 변경
-
-	// - 현재 시간이 수정 하려는 예약의 startTime보다 지났을 경우 → 수정 불가
-
 }
