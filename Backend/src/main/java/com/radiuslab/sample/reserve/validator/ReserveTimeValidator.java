@@ -35,7 +35,7 @@ public class ReserveTimeValidator {
 		if (startTime.toLocalTime().getMinute() % 30 != 0) {
 			errors.rejectValue("startTime", "WrongTime", "예약은 30분 단위로만 가능합니다.");
 		}
-		if (endTime.toLocalTime().getMinute() % 30 != 29) {
+		if (endTime.toLocalTime().getMinute() % 30 != 0) {
 			errors.rejectValue("endTime", "WrongTime", "예약은 30분 단위로만 가능합니다.");
 		}
 	}

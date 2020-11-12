@@ -46,12 +46,12 @@ public class ReserveController {
 			return ResponseEntity.badRequest().body(errors);
 		}
 
-		dto.update();
 		this.reserveTimeValidator.validate(dto, errors);
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
 		}
 
+		dto.update();
 		this.reserveValidator.validate(dto, errors);
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
@@ -66,7 +66,28 @@ public class ReserveController {
 	// 예약수정
 	@PutMapping
 	public ResponseEntity update(@Valid @RequestBody ReserveDto dto, Errors errors) {
-		return null;
+		if (dto.getReserveId() == null) {
+			errors.rejectValue("reserveId", "NotNull", "must not be null");
+		}
+		if (errors.hasErrors()) {
+			return ResponseEntity.badRequest().body(errors);
+		}
+
+		this.reserveTimeValidator.validate(dto, errors);
+		if (errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
+		}
+
+		dto.update();
+		this.reserveValidator.validate(dto, errors);
+		if (errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
+		}
+
+		Reserve res = this.reserveService.update(dto);
+
+		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
+		return ResponseEntity.created(uri).body(res);
 	}
 
 	// 예약조회
@@ -128,7 +149,7 @@ public class ReserveController {
 		if (checkedReserve == null) {
 			return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
 		}
-		
+
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
 		return ResponseEntity.created(uri).body(res);
 	}

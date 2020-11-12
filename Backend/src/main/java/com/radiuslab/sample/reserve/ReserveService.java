@@ -22,6 +22,12 @@ public class ReserveService {
 		return res;
 	}
 
+	public Reserve update(ReserveDto dto) {
+		Reserve reserve = this.modelMapper.map(dto, Reserve.class);
+		Reserve res = this.reserveRepository.save(reserve);
+		return res;
+	}
+
 	public List<Reserve> findByReserveDate(String reserveDate) {
 		LocalDate date = LocalDate.parse(reserveDate);
 		List<Reserve> reserveList = this.reserveRepository.findByReserveDate(date);
@@ -59,4 +65,5 @@ public class ReserveService {
 	public void delete(Reserve res) {
 		this.reserveRepository.delete(res);
 	}
+
 }
