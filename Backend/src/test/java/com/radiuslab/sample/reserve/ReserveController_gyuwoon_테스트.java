@@ -360,7 +360,7 @@ public class ReserveController_gyuwoon_테스트 {
 
 	// 예약테이블id가 유효하지 않는 경우(없는 예약테이블id) -> 컴파일 에러.. ava.lang.NullPointerException: 아예
 	// delete 매핑이 안되는건가,,
-	@Disabled
+	//@Disabled
 	@ParameterizedTest
 	@ValueSource(strings = { "5", "9999", "2", "-1" })
 	public void 예약_취소_실패_없는예약(String input) throws Exception {
@@ -373,14 +373,39 @@ public class ReserveController_gyuwoon_테스트 {
 				.build();
 		Reserve res = reserveService.save(dto);
 
+		System.out.println("######################");
+		System.out.println( res.toString());
 		// 예약 취소를 시도 -> 팝업창에 비밀번호 입력 -> 비밀번호와 예약번호 받아서 넘긴다(PassCheckDto)
 		PassCheckDto pcd = PassCheckDto.builder().reserveId(Long.parseLong(input)).userPassword("0000").build();
 
+		System.out.println( res.getReserveId());
+		
+		String temp = this.API_URL + "/" + res.getReserveId();
+		
+		System.out.println(temp);
+		
 		this.mockMvc
-				.perform(MockMvcRequestBuilders.delete(this.API_URL + "/" + String.valueOf(res.getReserveId()))
-						.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pcd)))
-				.andDo(print()).andExpect(result -> assertTrue(result.getResolvedException().getClass()
-						.isAssignableFrom(java.lang.NullPointerException.class)));
+		.perform(
+				MockMvcRequestBuilders.delete(temp)
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(pcd)))
+		.andExpect(status().isBadRequest())
+		.andExpect( (result) -> {
+			System.out.println("@@@@@@@@@@@@");
+			System.out.println(result.getResolvedException());
+		});
+		
+			
+		
+//		
+//				.andDo(print())
+//				.andExpect( rst -> {
+//					System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//					System.out.println( rst.getResolvedException());
+//				})
+//				.andExpect(
+//						result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(CException.class)))
+				//.andReturn();
 	}
 
 	/* 비밀번호 확인 */
@@ -420,7 +445,8 @@ public class ReserveController_gyuwoon_테스트 {
 
 		this.mockMvc
 				.perform(post(this.API_URL + "/checkpw")
-						.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(pcd)))
+						.contentType(MediaType.APPLICATION_JSON)//
+						.content(objectMapper.writeValueAsString(pcd)))
 				.andDo(print()).andExpect(status().isBadRequest());
 	}
 

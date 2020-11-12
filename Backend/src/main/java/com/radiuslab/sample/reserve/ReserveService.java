@@ -40,23 +40,40 @@ public class ReserveService {
 		return reserveList;
 	}
 
-	public Reserve findByReserveId(Long reserveId) throws IllegalArgumentException {
+	public Reserve findByReserveId(Long reserveId) throws  CException{
 		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
 		if (!reserve.isPresent()) { // Optional의 null체크
-			return null;
+			throw new CException( ""+reserveId);
 		}
 		return reserve.get();
 	}
 
-	public Reserve isReserveId(Reserve reserve, String userPassword) {
+	public Reserve isReserveId(Reserve reserve, String userPassword) throws CException{
 		Reserve res = this.findByReserveId(reserve.getReserveId());
-		if (res.getUserPassword().equals(userPassword))
+		
+		if (res.getUserPassword().equals(userPassword)) {			
 			return res;
-		// return throws notMatchPasswordException;
-		return null;
+		}
+		else {
+			throw new CException( "비밀번호가 맞지 않는 예약번호 : "+reserve.getReserveId());
+		}
+
 	}
 
 	public void delete(Reserve res) {
 		this.reserveRepository.delete(res);
+	}
+}
+
+/* Custom Exception 생성 */
+class CException extends Exception{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public CException( String msg) {
+		super( msg);
 	}
 }
