@@ -75,9 +75,6 @@ public class ReserveController_gyuwoon_테스트 {
 
 	private Room room1, room2;
 
-	@Autowired
-	private RoomItemRepository roomItemRepository;
-
 	@BeforeAll
 	public void 데이터_셋업() {
 		List<Room> list = new ArrayList<>();
@@ -421,5 +418,6 @@ public class ReserveController_gyuwoon_테스트 {
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
+
 
 }
