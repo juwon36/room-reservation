@@ -90,6 +90,9 @@ public class ReserveController_gyuwoon_테스트 {
 		this.roomRepository.saveAll(list);
 		this.room1 = list.get(0);
 		this.room2 = list.get(1);
+		
+		
+		System.out.println("test");
 	}
 
 	@BeforeEach
