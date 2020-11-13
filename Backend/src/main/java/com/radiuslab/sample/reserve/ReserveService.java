@@ -51,7 +51,7 @@ public class ReserveService {
 		if (!reserve.isPresent()) { // Optional의 null체크
 			throw new CException( ""+reserveId);
 		}
-		return null;
+		return reserve.get();
 	}
 
 	public Reserve isReserveId(Reserve reserve, String userPassword) throws CException{
