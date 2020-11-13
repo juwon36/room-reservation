@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Proxy;
+
 import com.radiuslab.sample.roomItem.RoomItem;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@Proxy(lazy=false) // 매핑을 통해 lazy로딩되므로 캐싱시 문제가 발생하지 않도록 proxy false를 설정한다.
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
