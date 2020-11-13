@@ -377,27 +377,7 @@ public class ReserveController_gyuwoon_테스트 {
 				});
 	}
 
-	@Disabled // java.lang.IllegalArgumentException: Entity must not be null!
-	// 에러
-	// 발생... 처리는 어떻게 하죠..
-	@Test
-	public void 예약_취소_실패_데이터누락_empty_password() throws Exception {
-		// 예약 생성
-		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정겨운").userEmail("gyu@email.com")
-				.userPassword("0000").userNum(2).title("회의")//
-				.reserveDate(LocalDate.of(2020, 12, 10))//
-				.startTime(LocalDateTime.of(2020, 12, 10, 16, 00))//
-				.endTime(LocalDateTime.of(2020, 12, 10, 17, 30))//
-				.build();
-		Reserve res = reserveService.save(dto);
-
-		PassCheckDto pcd = PassCheckDto.builder().reserveId(res.getReserveId()).userPassword(res.getUserPassword())
-				.build();
-
-		this.mockMvc.perform(post(this.API_URL + "/checkpw").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(pcd))).andDo(print()).andExpect(status().isCreated());
-	}
-
+	
 	// url로 예약테이블 id가 넘어가지 않은 경우 -> 405 해당 자원이 지원하지 않는 메소드일 때,,
 	@Test
 	public void 예약_취소_실패_path() throws Exception {
@@ -442,44 +422,4 @@ public class ReserveController_gyuwoon_테스트 {
 
 	}
 
-	// 컨트롤러로 아이템 조회 테스트
-	@Disabled
-	@Test
-	public void 비품_조회_테스트() throws Exception {
-		// Room 생성
-//		Room room1 = new Room();
-//		room1.setRoomName("1회의실");
-//		roomRepository.save(room1);
-
-		// RoomItem 생성 ... 어떻게 묶어서 반복시킬 수 없을까,,,
-		List<RoomItem> roomItems = new ArrayList<>();
-
-		RoomItem roomItem1 = RoomItem.builder().itemName("TV").itemNum(1).room(room1).build();
-		room1.getItems().add(roomItem1);
-		roomItemRepository.save(roomItem1);
-
-		RoomItem roomItem2 = RoomItem.builder().itemName("의자").itemNum(6).room(room1).build();
-		room1.getItems().add(roomItem2);
-		roomItemRepository.save(roomItem2);
-
-		RoomItem roomItem3 = RoomItem.builder().itemName("테이블").itemNum(1).room(room1).build();
-		room1.getItems().add(roomItem3);
-		roomItemRepository.save(roomItem3);
-
-		List<RoomItem> roomItemList = roomItemRepository.findAll();
-		for (RoomItem r : roomItemList) {
-			LOGGER.info("1회의실 id : " + room1.getRoomId());
-			LOGGER.info("RoomItem");
-			LOGGER.info("RoomItem ID: " + r.getItemId());
-			LOGGER.info("RoomItem ItemName: " + r.getItemName());
-			LOGGER.info("RoomItem Number: " + r.getItemNum());
-		}
-
-		// 조회
-		mockMvc.perform(//
-				get("/api/reserve/roomItem").param("roomId", String.valueOf(room1.getRoomId())))//
-				.andDo(MockMvcResultHandlers.print())//
-				.andExpect(status().isOk())//
-				.andReturn();//
-	}
 }
