@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,7 @@ import com.radiuslab.sample.roomItem.RoomItemService;
 @RestController
 @RequestMapping("/api/reserve")
 public class ReserveController {
+	Logger LOGGER = LoggerFactory.getLogger(ReserveController.class);
 	@Autowired
 	private ReserveService reserveService;
 
