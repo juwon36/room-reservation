@@ -172,11 +172,4 @@ public class ReserveController {
 		return ResponseEntity.created(uri).body(res);
 	}
 	
-	// 비품 조회 - 테스트 api
-	@Cacheable(key="#roomid", value="RoomItem")
-	@GetMapping("/roomItem")
-	public ResponseEntity<List<RoomItem>> findRoomItemTest(@RequestParam Long roomId){
-		List<RoomItem> itemList =  roomItemService.findAll();
-		return new ResponseEntity<List<RoomItem>>(itemList, HttpStatus.OK);
-	}
 }

@@ -13,8 +13,5 @@ public class RoomItemService {
 	@Autowired
 	private RoomItemRepository roomItemRepository;
 
-	public List<RoomItem> findAll() {
-		return roomItemRepository.findAll();
-	}
 
 }
