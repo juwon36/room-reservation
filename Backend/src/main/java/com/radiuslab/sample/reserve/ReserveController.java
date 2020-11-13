@@ -103,6 +103,7 @@ public class ReserveController {
 	}
 
 	// 예약조회
+	// 메인페이지 - 특정 날짜의 모든 회의실의 예약 조회
 	@GetMapping("{reserveDate}")
 	public ResponseEntity<List<Reserve>> findByReserveDate(@PathVariable String reserveDate) {
 		List<Reserve> reserveList = this.reserveService.findByReserveDate(reserveDate);
