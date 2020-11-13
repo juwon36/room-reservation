@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Proxy(lazy=false) // 매핑을 통해 lazy로딩되므로 캐싱시 문제가 발생하지 않도록 proxy false를 설정한다.
 @Entity
@@ -26,6 +27,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@ToString
 public class Room {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

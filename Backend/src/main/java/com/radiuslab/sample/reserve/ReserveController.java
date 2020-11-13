@@ -18,11 +18,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.radiuslab.sample.reserve.validator.ReserveTimeValidator;
+import com.radiuslab.sample.reserve.validator.ReserveValidator;
 import com.radiuslab.sample.roomItem.RoomItem;
 import com.radiuslab.sample.roomItem.RoomItemService;
 
@@ -49,12 +52,12 @@ public class ReserveController {
 			return ResponseEntity.badRequest().body(errors);
 		}
 
-		dto.update();
 		this.reserveTimeValidator.validate(dto, errors);
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
 		}
 
+		dto.update();
 		this.reserveValidator.validate(dto, errors);
 		if (errors.hasErrors()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
@@ -67,6 +70,31 @@ public class ReserveController {
 	}
 
 	// 예약수정
+	@PutMapping
+	public ResponseEntity update(@Valid @RequestBody ReserveDto dto, Errors errors) {
+		if (dto.getReserveId() == null) {
+			errors.rejectValue("reserveId", "NotNull", "must not be null");
+		}
+		if (errors.hasErrors()) {
+			return ResponseEntity.badRequest().body(errors);
+		}
+
+		this.reserveTimeValidator.validate(dto, errors);
+		if (errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
+		}
+
+		dto.update();
+		this.reserveValidator.validate(dto, errors);
+		if (errors.hasErrors()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(errors);
+		}
+
+		Reserve res = this.reserveService.update(dto);
+
+		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
+		return ResponseEntity.created(uri).body(res);
+	}
 
 	// 예약조회
 	@GetMapping("{reserveDate}")
@@ -139,7 +167,7 @@ public class ReserveController {
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
 		}
-		
+
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
 		return ResponseEntity.created(uri).body(res);
 	}
