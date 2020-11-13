@@ -1,4 +1,4 @@
-package com.radiuslab.sample.roomItem;
+package com.radiuslab.sample.commons.cache;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

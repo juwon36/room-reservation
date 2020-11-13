@@ -7,6 +7,4 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface RoomItemRepository extends JpaRepository<RoomItem, Long> {
 
-	List<RoomItem> findAll();
-
 }
