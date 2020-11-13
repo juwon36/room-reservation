@@ -1,10 +1,12 @@
-package com.radiuslab.sample.reserve;
+package com.radiuslab.sample.reserve.validator;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+
+import com.radiuslab.sample.reserve.ReserveDto;
 
 @Component
 public class ReserveTimeValidator {
@@ -33,7 +35,7 @@ public class ReserveTimeValidator {
 		if (startTime.toLocalTime().getMinute() % 30 != 0) {
 			errors.rejectValue("startTime", "WrongTime", "예약은 30분 단위로만 가능합니다.");
 		}
-		if (endTime.toLocalTime().getMinute() % 30 != 29) {
+		if (endTime.toLocalTime().getMinute() % 30 != 0) {
 			errors.rejectValue("endTime", "WrongTime", "예약은 30분 단위로만 가능합니다.");
 		}
 	}

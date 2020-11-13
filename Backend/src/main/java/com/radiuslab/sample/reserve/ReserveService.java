@@ -22,6 +22,12 @@ public class ReserveService {
 		return res;
 	}
 
+	public Reserve update(ReserveDto dto) {
+		Reserve reserve = this.modelMapper.map(dto, Reserve.class);
+		Reserve res = this.reserveRepository.save(reserve);
+		return res;
+	}
+
 	public List<Reserve> findByReserveDate(String reserveDate) {
 		LocalDate date = LocalDate.parse(reserveDate);
 		List<Reserve> reserveList = this.reserveRepository.findByReserveDate(date);
@@ -40,25 +46,41 @@ public class ReserveService {
 		return reserveList;
 	}
 
-	public Reserve findByReserveId(Long reserveId) {
+	public Reserve findByReserveId(Long reserveId) throws  CException{
 		Optional<Reserve> reserve = this.reserveRepository.findById(reserveId);
-		// Reserve res = reserve.get();
-		// if (res == null) return null;
-		if (reserve.isPresent()) { // Optional의 null체크
-			return reserve.get();
+		if (!reserve.isPresent()) { // Optional의 null체크
+			throw new CException( ""+reserveId);
 		}
 		return null;
 	}
 
-	public Reserve isReserveId(Reserve reserve, String userPassword) {
+	public Reserve isReserveId(Reserve reserve, String userPassword) throws CException{
 		Reserve res = this.findByReserveId(reserve.getReserveId());
-		if (res.getUserPassword().equals(userPassword))
+		
+		if (res.getUserPassword().equals(userPassword)) {			
 			return res;
-		// return throws notMatchPasswordException;
-		return null;
+		}
+		else {
+			throw new CException( "비밀번호가 맞지 않는 예약번호 : "+reserve.getReserveId());
+		}
+
 	}
 
 	public void delete(Reserve res) {
 		this.reserveRepository.delete(res);
+	}
+
+}
+
+/* Custom Exception 생성 */
+class CException extends Exception{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public CException( String msg) {
+		super( msg);
 	}
 }

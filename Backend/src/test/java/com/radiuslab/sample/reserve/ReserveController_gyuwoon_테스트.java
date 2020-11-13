@@ -42,6 +42,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radiuslab.sample.room.Room;
 import com.radiuslab.sample.room.RoomRepository;
+import com.radiuslab.sample.roomItem.RoomItem;
+import com.radiuslab.sample.roomItem.RoomItemRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/radius_test" })
@@ -70,6 +72,9 @@ public class ReserveController_gyuwoon_테스트 {
 	private ReserveService reserveService;
 
 	private Room room1, room2;
+
+	@Autowired
+	private RoomItemRepository roomItemRepository;
 
 	@BeforeAll
 	public void 데이터_셋업() {
@@ -314,12 +319,59 @@ public class ReserveController_gyuwoon_테스트 {
 				.build();
 		Reserve res = reserveService.save(dto);
 
-		this.mockMvc.perform(MockMvcRequestBuilders.delete(this.API_URL + "/" + res.getReserveId())
-				.param("reserveId", String.valueOf(res.getReserveId())).contentType(MediaType.APPLICATION_JSON)//
-				.content(objectMapper.writeValueAsString(res))//
-		).andDo(print())//
-				.andExpect(status().isBadRequest());
+		// 예약 취소를 시도 -> 팝업창에 비밀번호 입력 -> 비밀번호와 예약번호 받아서 넘긴다(PassCheckDto)
+		PassCheckDto pcd = PassCheckDto.builder().userPassword("0000").reserveId(res.getReserveId()).build();
 
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.delete(this.API_URL).contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(pcd)))
+				.andDo(print()).andExpect(status().isMethodNotAllowed());
+
+	}
+
+	// 예약테이블id가 유효하지 않는 경우(없는 예약테이블id) -> 컴파일 에러.. ava.lang.NullPointerException: 아예
+	// delete 매핑이 안되는건가,,
+	// @Disabled
+	@ParameterizedTest
+	@ValueSource(strings = { "5", "9999", "2", "-1" })
+	public void 예약_취소_실패_없는예약(String input) throws Exception {
+		// 예약 생성
+		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정겨운").userEmail("gyu@email.com")
+				.userPassword("0000").userNum(2).title("회의")//
+				.reserveDate(LocalDate.of(2020, 12, 10))//
+				.startTime(LocalDateTime.of(2020, 12, 10, 16, 00))//
+				.endTime(LocalDateTime.of(2020, 12, 10, 17, 30))//
+				.build();
+		Reserve res = reserveService.save(dto);
+
+		System.out.println("######################");
+		System.out.println(res.toString());
+		// 예약 취소를 시도 -> 팝업창에 비밀번호 입력 -> 비밀번호와 예약번호 받아서 넘긴다(PassCheckDto)
+		PassCheckDto pcd = PassCheckDto.builder().reserveId(Long.parseLong(input)).userPassword("0000").build();
+
+		System.out.println(res.getReserveId());
+
+		String temp = this.API_URL + "/" + res.getReserveId();
+
+		System.out.println(temp);
+
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.delete(temp).contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(pcd)))
+				.andExpect(status().isBadRequest()).andExpect((result) -> {
+					System.out.println("@@@@@@@@@@@@");
+					System.out.println(result.getResolvedException());
+				});
+
+//		
+//				.andDo(print())
+//				.andExpect( rst -> {
+//					System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//					System.out.println( rst.getResolvedException());
+//				})
+//				.andExpect(
+//						result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(CException.class)))
+		// .andReturn();
 	}
 
 	@Disabled // java.lang.IllegalArgumentException: Entity must not be null!
@@ -336,12 +388,11 @@ public class ReserveController_gyuwoon_테스트 {
 				.build();
 		Reserve res = reserveService.save(dto);
 
-		this.mockMvc.perform(MockMvcRequestBuilders.delete(this.API_URL + "/" + res.getReserveId())
-				.param("reserveId", String.valueOf(res.getReserveId())).param("userPassword", "")
-				.contentType(MediaType.APPLICATION_JSON)//
-				.content(objectMapper.writeValueAsString(res))//
-		).andDo(print())//
-				.andExpect(status().isBadRequest());
+		PassCheckDto pcd = PassCheckDto.builder().reserveId(res.getReserveId()).userPassword(res.getUserPassword())
+				.build();
+
+		this.mockMvc.perform(post(this.API_URL + "/checkpw").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(pcd))).andDo(print()).andExpect(status().isCreated());
 	}
 
 	// url로 예약테이블 id가 넘어가지 않은 경우 -> 405 해당 자원이 지원하지 않는 메소드일 때,,
@@ -363,12 +414,14 @@ public class ReserveController_gyuwoon_테스트 {
 		).andDo(print())//
 				.andExpect(status().isMethodNotAllowed());
 
+		this.mockMvc.perform(post(this.API_URL + "/checkpw").contentType(MediaType.APPLICATION_JSON)//
+				.content(objectMapper.writeValueAsString(pcd))).andDo(print()).andExpect(status().isBadRequest());
 	}
 
 	// 예약테이블id가 유효하지 않는 경우(없는 예약테이블id) -> 400에러
 	@ParameterizedTest
-	@ValueSource(strings = { "-1", "5", "9999", "2" })
-	public void 예약_취소_실패_없는예약(String input) throws Exception {
+	@ValueSource(strings = { "0", "00", "000", "00000" })
+	public void 비밀번호_자릿수_실패(String input) throws Exception {
 		// 예약 생성
 		ReserveDto dto = ReserveDto.builder().roomId(Long.valueOf(1)).userName("정겨운").userEmail("gyu@email.com")
 				.userPassword("0000").userNum(2).title("회의")//
@@ -378,12 +431,12 @@ public class ReserveController_gyuwoon_테스트 {
 				.build();
 		Reserve res = reserveService.save(dto);
 
-		this.mockMvc.perform(MockMvcRequestBuilders.delete(this.API_URL + "/" + input) //
-				.param("reserveId", input).param("userPassword", res.getUserPassword())//
-				.contentType(MediaType.APPLICATION_JSON)//
-				.content(objectMapper.writeValueAsString(res))//
-		).andDo(print())//
-				.andExpect(status().isBadRequest());
+		PassCheckDto pcd = PassCheckDto.builder().reserveId(res.getReserveId()).userPassword(input).build();
+
+		this.mockMvc
+				.perform(post(this.API_URL + "/checkpw").contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(pcd)))
+				.andDo(print()).andExpect(status().isBadRequest());
 	}
 
 	/* 비밀번호 확인 */
@@ -391,8 +444,49 @@ public class ReserveController_gyuwoon_테스트 {
 
 	// 비밀번호가 db에 저장된 비밀번호와 일치하지 않는 경우
 
-	// 비밀번호가 4자리 미만인 경우
+		this.mockMvc
+				.perform(post(this.API_URL + "/checkpw").contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(pcd)))
+				.andDo(print()).andExpect(status().isBadRequest());
+	}
 
-	// 비밀번호값이 null 또는 empty
+	// 컨트롤러로 아이템 조회 테스트
+	@Test
+	public void 비품_조회_테스트() throws Exception {
+		// Room 생성
+//		Room room1 = new Room();
+//		room1.setRoomName("1회의실");
+//		roomRepository.save(room1);
 
+		// RoomItem 생성 ... 어떻게 묶어서 반복시킬 수 없을까,,,
+		List<RoomItem> roomItems = new ArrayList<>();
+
+		RoomItem roomItem1 = RoomItem.builder().itemName("TV").itemNum(1).room(room1).build();
+		room1.getItems().add(roomItem1);
+		roomItemRepository.save(roomItem1);
+
+		RoomItem roomItem2 = RoomItem.builder().itemName("의자").itemNum(6).room(room1).build();
+		room1.getItems().add(roomItem2);
+		roomItemRepository.save(roomItem2);
+
+		RoomItem roomItem3 = RoomItem.builder().itemName("테이블").itemNum(1).room(room1).build();
+		room1.getItems().add(roomItem3);
+		roomItemRepository.save(roomItem3);
+		
+		List<RoomItem> roomItemList = roomItemRepository.findAll();
+		for (RoomItem r : roomItemList) {
+			LOGGER.info("1회의실 id : "+room1.getRoomId());
+			LOGGER.info("RoomItem");
+			LOGGER.info("RoomItem ID: " + r.getItemId());
+			LOGGER.info("RoomItem ItemName: " + r.getItemName());
+			LOGGER.info("RoomItem Number: " + r.getItemNum());
+		}
+
+		// 조회
+		mockMvc.perform(//
+				get("/api/reserve/roomItem").param("roomId", String.valueOf(room1.getRoomId())))//
+				.andDo(MockMvcResultHandlers.print())//
+				.andExpect(status().isOk())//
+				.andReturn();//
+	}
 }
