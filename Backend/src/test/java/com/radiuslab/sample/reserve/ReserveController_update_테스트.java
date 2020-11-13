@@ -556,7 +556,7 @@ public class ReserveController_update_테스트 {
 	@DisplayName("메일 전송")
 	public void save_mail_전송_테스트() throws Exception {
 		ReserveDto dto = ReserveDto.builder().reserveId(reserve1.getReserveId()).roomId(Long.valueOf(2)).userName("정겨운")
-				.userEmail("charminggw@gmail.com").userPassword("gyuwoon").userNum(4).title("스터디 주간 회의")
+				.userEmail("charminggw@rmail.com").userPassword("gyuwoon").userNum(4).title("스터디 주간 회의")
 				.reserveDate(LocalDate.of(2020, 11, 19)).startTime(LocalDateTime.of(2020, 11, 19, 15, 00))
 				.endTime(LocalDateTime.of(2020, 11, 19, 16, 00)).build();
 
