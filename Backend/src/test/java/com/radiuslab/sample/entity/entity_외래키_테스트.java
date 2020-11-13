@@ -165,9 +165,9 @@ public class entity_외래키_테스트 {
 		roomRepository.save(room);
 
 		List<Room> list = roomRepository.findAll();
-		for (Room r : list) {
-			LOGGER.info(r.getRoomId() + " : " + r.toString());
-		}
+		// for (Room r : list) {
+		// LOGGER.info(r.getRoomId() + " : " + r.toString());
+		// }
 
 		RoomId roomId = roomRepository.findByRoomId(Long.valueOf(1));
 		LOGGER.info("roomId: " + roomId.getRoomId().toString());
