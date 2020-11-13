@@ -1,5 +1,7 @@
 package com.radiuslab.sample.roomItem;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class RoomItem {
+public class RoomItem implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long itemId;

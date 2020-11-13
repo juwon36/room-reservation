@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.radiuslab.sample.roomItem.RoomItem;
+import com.radiuslab.sample.roomItem.RoomItemService;
 
 @RestController
 @RequestMapping("/api/reserve")
@@ -34,6 +38,9 @@ public class ReserveController {
 
 	@Autowired
 	private ReserveValidator reserveValidator;
+	
+	@Autowired
+	private RoomItemService roomItemService;
 
 	// 예약하기
 	@PostMapping
@@ -135,5 +142,13 @@ public class ReserveController {
 		
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
 		return ResponseEntity.created(uri).body(res);
+	}
+	
+	// 비품 조회 - 테스트 api
+	@Cacheable(key="#roomid", value="RoomItem")
+	@GetMapping("/roomItem")
+	public ResponseEntity<List<RoomItem>> findRoomItemTest(@RequestParam Long roomId){
+		List<RoomItem> itemList =  roomItemService.findAll();
+		return new ResponseEntity<List<RoomItem>>(itemList, HttpStatus.OK);
 	}
 }
