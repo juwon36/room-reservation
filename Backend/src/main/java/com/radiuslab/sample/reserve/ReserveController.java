@@ -34,6 +34,7 @@ import com.radiuslab.sample.roomItem.RoomItemService;
 @RequestMapping("/api/reserve")
 public class ReserveController {
 	Logger LOGGER = LoggerFactory.getLogger(ReserveController.class);
+	
 	@Autowired
 	private ReserveService reserveService;
 

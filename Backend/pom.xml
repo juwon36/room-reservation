@@ -73,12 +73,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
-			<version>1.4.3.RELEASE</version>
 		</dependency>
-		<!--  redis CacheServer 설정 -->
+		<!-- cache -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
 		<!-- 추가 끝 -->
 	</dependencies>
