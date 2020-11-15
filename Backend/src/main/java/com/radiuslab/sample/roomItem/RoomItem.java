@@ -1,14 +1,14 @@
 package com.radiuslab.sample.roomItem;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.radiuslab.sample.room.Room;
 
 import lombok.AllArgsConstructor;
@@ -25,12 +25,13 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-public class RoomItem implements Serializable{
+public class RoomItem{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long itemId;
 
-	@ManyToOne
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "roomId")
 	private Room room;
 
