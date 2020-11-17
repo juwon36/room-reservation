@@ -1,7 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faVideo } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faPen, faTv, faPlug } from "@fortawesome/free-solid-svg-icons";
 
 function CreateRoomInfoBox({ roomInfo }) {
   const MaximumBox = () => (
@@ -20,10 +18,17 @@ function CreateRoomInfoBox({ roomInfo }) {
 
   const BeamProjectorBox = () => (
     <div>
-      <FontAwesomeIcon icon={faVideo} />
-      <span>빔프로젝터</span>
+      <FontAwesomeIcon icon={faTv} />
+      <span>TV</span>
     </div>
   );
+  const AdaptorBox = () => (
+    <div>
+      <FontAwesomeIcon icon={faPlug} />
+      <span>콘센트 {roomInfo.Adaptor}구</span>
+    </div>
+  );
+
 
   return (
     <div className="bd CreateRoomInfoBox">
@@ -31,6 +36,7 @@ function CreateRoomInfoBox({ roomInfo }) {
         <MaximumBox />
         {roomInfo.board && <BoardBox />}
         {roomInfo.beamProjector && <BeamProjectorBox />}
+        <AdaptorBox />
       </div>
     </div>
   );

@@ -21,8 +21,8 @@ function DateBox() {
   }, [todayDate]);
 
   const calcDay = (m) => {
-    // let currentD = todayDate.clone();
-    return todayDate.add(m, 'days').format('MM / DD');
+    // let currentD = todayDate.clone(); - moment 라이브러리 사용시 객체를 이용 -> clone()필요
+    return todayDate.add(m, 'days').format('MM/DD ddd');
   }
 
   const moveDay = (m) => {

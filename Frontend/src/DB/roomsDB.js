@@ -1,52 +1,40 @@
 const roomsDB = [
   {
-    roomName: "A",
+    roomName: "오픈형",
     roomInfo: {
-      maximum: 5,
+      maximum: 11,
       board: true,
       beamProjector: true,
+      Adaptor: 4,
     },
   },
   {
-    roomName: "B",
+    roomName: "1회의실",
     roomInfo: {
-      maximum: 8,
+      maximum: 6,
       board: true,
       beamProjector: true,
+      Adaptor: 3,
     },
   },
   {
-    roomName: "C",
+    roomName: "2회의실",
     roomInfo: {
-      maximum: 8,
+      maximum: 6,
       board: true,
       beamProjector: false,
+      Adaptor: 4,
     },
   },
   {
-    roomName: "D",
+    roomName: "대회의실",
     roomInfo: {
-      maximum: 10,
-      board: false,
+      maximum: 23,
+      board: true,
       beamProjector: true,
-    },
-  },
-  {
-    roomName: "E",
-    roomInfo: {
-      maximum: 20,
-      board: false,
-      beamProjector: false,
-    },
-  },
-  {
-    roomName: "F",
-    roomInfo: {
-      maximum: 20,
-      board: false,
-      beamProjector: false,
-    },
-  },
+      Adaptor: 8,
+    }
+  }
 ];
 
 export default roomsDB;

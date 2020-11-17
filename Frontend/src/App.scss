@@ -193,7 +193,9 @@ body {
         display: flex;
         align-items: center;
         svg {
-          margin-right: 0.7rem;
+          width:25px; height: 25px;
+          margin-right: 1rem;
+
         }
       }
       @media all and (max-width: 1300px) {
@@ -205,7 +207,8 @@ body {
         display: flex;
         align-items: center;
         svg {
-          margin-left: 0.7rem;
+          width:25px; height: 25px;
+          margin-left: 1rem;
           text-align: center;
         }
       }
@@ -305,7 +308,7 @@ body {
 
       .CreateTableBox {
         display: flex;
-        flex: 3 0 0;
+        flex: 5 0 0;
         flex-direction: column;
         justify-content: center;
         align-content: center;

@@ -1,11 +1,12 @@
 import { IoIosArrowForward } from "react-icons/io";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowDropleftCircle, IoIosArrowDroprightCircle } from "react-icons/io";
 
 function CreateDate({ data, state, onClick }) {
   let stateSpan = {
     pre:
       <span className="CreateDate-pre">
-        <IoIosArrowBack onClick={onClick} />
+        {/* <IoIosArrowBack onClick={onClick} /> */}
+        <IoIosArrowDropleftCircle onClick={onClick} />
         <span>{data}</span>
       </span>,
     today:
@@ -18,7 +19,7 @@ function CreateDate({ data, state, onClick }) {
     post:
       <span className="CreateDate-post">
         <span>{data}</span>
-        <IoIosArrowForward onClick={onClick} />
+        <IoIosArrowDroprightCircle onClick={onClick} />
       </span>
   }
 
