@@ -1,7 +1,6 @@
 package com.radiuslab.sample.room;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,7 +12,6 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -30,7 +28,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radiuslab.sample.roomItem.RoomItem;
 import com.radiuslab.sample.roomItem.RoomItemRepository;
 
@@ -48,14 +45,11 @@ public class Room_controller_테스트 {
 	private WebApplicationContext ctx;
 
 	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
 	private RoomRepository roomRepository;
 
 	@Autowired
 	private RoomItemRepository roomItemRepository;
-	
+
 	@Autowired
 	private RoomService roomService;
 
@@ -91,22 +85,22 @@ public class Room_controller_테스트 {
 		}
 		roomItemRepository.saveAll(items);
 
-//		LOGGER.info("==================== roomRepository.findAll");
-//		for (Room r : this.roomRepository.findAll()) {
-//			LOGGER.info("Room[id: " + r.getRoomId() + ", name: " + r.getRoomName() + ", capacity: " + r.getCapacity()
-//					+ "]");
-//			for (RoomItem i : r.getItems()) {
-//				LOGGER.info("RoomItem[id: " + i.getItemId() + ", name: " + i.getItemName() + ", num: " + i.getItemNum()
-//						+ ", room id: " + i.getRoom().getRoomId() + "]");
-//			}
-//			LOGGER.info("=============================\n");
-//		}
+		// LOGGER.info("==================== roomRepository.findAll");
+		// for (Room r : this.roomRepository.findAll()) {
+		// LOGGER.info("Room[id: " + r.getRoomId() + ", name: " + r.getRoomName() + ", capacity: " + r.getCapacity()
+		// + "]");
+		// for (RoomItem i : r.getItems()) {
+		// LOGGER.info("RoomItem[id: " + i.getItemId() + ", name: " + i.getItemName() + ", num: " + i.getItemNum()
+		// + ", room id: " + i.getRoom().getRoomId() + "]");
+		// }
+		// LOGGER.info("=============================\n");
+		// }
 	}
 
 	@BeforeEach
 	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx).addFilters(new CharacterEncodingFilter("UTF-8", true))
-//				.alwaysDo(print())
+				// .alwaysDo(print())
 				.build();
 
 		// 시간체크
@@ -116,9 +110,9 @@ public class Room_controller_테스트 {
 	@AfterEach
 	public void 캐시테스트용_시간체크() {
 		endTime = System.currentTimeMillis();
-		LOGGER.info("소요시간: "+ (endTime - startTime) + "ms");
+		LOGGER.info("소요시간: " + (endTime - startTime) + "ms");
 	}
-	
+
 	@Test
 	public void 회의실_조회_service_테스트() {
 		List<Room> room = roomService.findAll();
@@ -130,13 +124,12 @@ public class Room_controller_테스트 {
 		System.out.println(roomService.findAll());
 	}
 
-	
 	@RepeatedTest(5)
 	public void 회의실_조회_테스트() throws Exception {
 
 		mockMvc.perform(//
 				get("/api/room"))//
-//				.andDo(MockMvcResultHandlers.print())//
+				// .andDo(MockMvcResultHandlers.print())//
 				.andExpect(status().isOk());//
 	}
 

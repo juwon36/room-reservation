@@ -18,10 +18,10 @@ import lombok.ToString;
 @Builder
 @ToString
 public class PassCheckDto {
-	
+
 	@NotNull
 	private Long reserveId;
-	
+
 	@NotEmpty
 	@Size(min = 4)
 	private String userPassword;

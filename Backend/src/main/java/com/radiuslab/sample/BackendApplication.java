@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
-@EnableCaching //SpringBoot에게 캐시를 사용하겠다고 알려주기 -> 캐싱어노테이션 사용 가능
+@EnableCaching // SpringBoot에게 캐시를 사용하겠다고 알려주기 -> 캐싱어노테이션 사용 가능
 @SpringBootApplication
 public class BackendApplication {
 

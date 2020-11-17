@@ -17,7 +17,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -44,8 +43,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radiuslab.sample.room.Room;
 import com.radiuslab.sample.room.RoomRepository;
-import com.radiuslab.sample.roomItem.RoomItem;
-import com.radiuslab.sample.roomItem.RoomItemRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = { "spring.datasource.url=jdbc:postgresql://localhost:5432/radius_test" })
@@ -279,10 +276,10 @@ public class ReserveController_gyuwoon_테스트 {
 				.endTime(LocalDateTime.of(2020, 12, 10, 17, 30))//
 				.build();
 		Reserve res = reserveService.save(reserveDto);
-		
 
 		// 예약 취소를 시도 -> 팝업창에 비밀번호 입력 -> 비밀번호와 예약번호 받아서 넘긴다(PassCheckDto)
-		PassCheckDto pcd = PassCheckDto.builder().userPassword(res.getUserPassword()).reserveId(res.getReserveId()).build();
+		PassCheckDto pcd = PassCheckDto.builder().userPassword(res.getUserPassword()).reserveId(res.getReserveId())
+				.build();
 
 		this.mockMvc.perform(MockMvcRequestBuilders.delete(this.API_URL + "/" + res.getReserveId())
 				.contentType(MediaType.APPLICATION_JSON)//
@@ -374,7 +371,6 @@ public class ReserveController_gyuwoon_테스트 {
 				});
 	}
 
-	
 	// url로 예약테이블 id가 넘어가지 않은 경우 -> 405 해당 자원이 지원하지 않는 메소드일 때,,
 	@Test
 	public void 예약_취소_실패_path() throws Exception {
@@ -418,6 +414,5 @@ public class ReserveController_gyuwoon_테스트 {
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
-
 
 }

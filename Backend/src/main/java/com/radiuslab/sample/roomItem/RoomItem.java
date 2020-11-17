@@ -25,7 +25,7 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-public class RoomItem{
+public class RoomItem {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long itemId;

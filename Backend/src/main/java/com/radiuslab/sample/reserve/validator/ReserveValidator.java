@@ -27,7 +27,6 @@ public class ReserveValidator {
 			errors.rejectValue("roomId", "WrongRoomId", "예약하려는 회의실이 없는 회의실입니다.");
 		}
 
-		// TODO 나중에 고쳐라
 		if (dto.getReserveId() != null) {
 			Optional<Reserve> res = this.reserveRepository.findById(dto.getReserveId());
 			if (res.isPresent()) {

@@ -22,15 +22,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Proxy(lazy=false) // 매핑을 통해 lazy로딩되므로 캐싱시 문제가 발생하지 않도록 proxy false를 설정한다.
+@Proxy(lazy = false) // 매핑을 통해 lazy로딩되므로 캐싱시 문제가 발생하지 않도록 proxy false를 설정한다.
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
-@ToString(exclude="items") //stackoverflow 에러 해결을 위해 추가
-public class Room implements Serializable{
+@ToString(exclude = "items") // stackoverflow 에러 해결을 위해 추가
+public class Room implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long roomId;

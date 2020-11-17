@@ -1,0 +1,380 @@
+// Mediaquery
+// Break Point
+$mobile: 600px;
+$tablet: 768px;
+$laptop: 1020px;
+$desktop: 1400px;
+
+// Mixins
+@mixin mobile {
+  @media all and (max-width: #{$mobile}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media all and (max-width: #{$tablet}) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media all and (max-width: #{$laptop}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media all and (max-width: #{$desktop}) {
+    @content;
+  }
+}
+
+@font-face {
+  font-family: "NanumSquareRound";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+// .bd{
+//     border: 1px solid rgb(189, 202, 207);
+// }
+
+html {
+  font-size: 62.5%;
+  font-family: "NanumSquareRound";
+
+  @include mobile {
+    font-size: 50%;
+  }
+  @include laptop {
+    font-size: 60%;
+  }
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+#root {
+  width: 50vw;
+  height: 100vw;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+
+  @include mobile {
+    width: 100vw;
+  }
+
+  @include laptop {
+    width: 80vw;
+  }
+}
+
+.App {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-content: center;
+
+  .TitleBox {
+    width: 100%;
+    height: 12rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h1 {
+      margin: 0%;
+      color: rgb(95, 95, 95);
+      font-size: 2rem;
+    }
+    .NowTime {
+      margin-top: 0.5rem;
+      font-size: 1.6rem;
+      color: rgb(241, 196, 15);
+    }
+    @include laptop {
+      margin: 2rem 0 2rem 0;
+    }
+  }
+
+  .DateBox > div:first-child:hover {
+    cursor: pointer;
+    font-size: 1.8rem;
+  }
+  .DateBox > div:last-child:hover {
+    cursor: pointer;
+    font-size: 1.8rem;
+  }
+  .DateBox {
+    width: 100%;
+    height: 6rem;
+    box-sizing: border-box;
+    margin-bottom: 2rem;
+    padding: 0 2rem 0 2rem;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+
+    background-color: rgb(241, 196, 15);
+    border-radius: 0.7rem;
+    color: white;
+
+    & > * {
+      flex: 1 0 0;
+    }
+    & > *:nth-child(3) {
+      flex: 2 0 0;
+    }
+
+    .moveMonthButtonBox {
+      display: flex;
+      justify-items: start;
+
+      .moveMonthButton:hover {
+        box-shadow: 0.1rem 0.2rem 0.5rem 0.3rem rgba(0, 0, 0, 0.12);
+      }
+      .moveMonthButton:focus {
+        outline: none;
+      }
+      .moveMonthButton {
+        width: 13rem;
+        padding: 0.5rem 0 0.5rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: none;
+        border: 0.3rem solid white;
+        border-radius: 2rem;
+        color: white;
+        font-size: 1.6rem;
+        cursor: pointer;
+
+        svg {
+          margin-right: 3px;
+        }
+      }
+      @media all and (max-width: 1400px) {
+        .moveMonthButton {
+          width: 5rem;
+        }
+        .moveMonthButton > svg {
+          margin-right: 0px;
+        }
+        .moveMonthButton > span {
+          display: none;
+        }
+      }
+    }
+
+    .CreateDate {
+      height: 100%;
+
+      font-size: 1.6rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .CreateDate-pre {
+        display: flex;
+        align-items: center;
+        svg {
+          margin-right: 0.7rem;
+        }
+      }
+      @media all and (max-width: 1300px) {
+        .CreateDate-pre > span {
+          display: none;
+        }
+      }
+      .CreateDate-post {
+        display: flex;
+        align-items: center;
+        svg {
+          margin-left: 0.7rem;
+          text-align: center;
+        }
+      }
+      @media all and (max-width: 1300px) {
+        .CreateDate-post > span {
+          display: none;
+        }
+      }
+      .CreateDate-today {
+        margin: 0;
+        font-size: 1.8rem;
+
+        strong {
+          font-weight: bold;
+        }
+        .MobileTodayDate {
+          display: none;
+        }
+
+        @media all and (max-width: 1400px) {
+          .WebTodayDate,
+          strong {
+            display: none;
+          }
+          .MobileTodayDate {
+            display: inline;
+          }
+        }
+      }
+    }
+  }
+
+  .ConferenceRoomsBox {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-content: center;
+
+    .CreateRoomBox:hover {
+      border-left: 1.8rem solid rgb(241, 196, 15);
+      box-shadow: 0.1rem 0.2rem 0.5rem 0.3rem rgba(241, 196, 15, 0.5);
+      cursor: pointer;
+    }
+    .CreateRoomBox {
+      width: 100%;
+      height: 10rem;
+      box-sizing: border-box;
+      margin-bottom: 2rem;
+
+      display: flex;
+      flex-wrap: wrap;
+
+      border-left: 1.8rem solid rgb(224, 224, 224);
+      box-shadow: 0.1rem 0.2rem 0.5rem 0.3rem rgba(0, 0, 0, 0.12);
+
+      .RoomNameBox {
+        display: flex;
+        flex: 1 0 0;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+
+        h3 {
+          font-size: 1.8rem;
+        }
+      }
+
+      .CreateRoomInfoBox {
+        flex: 1 0 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: rgb(95, 95, 95);
+        font-weight: bold;
+
+        .RoomInfoAlignBox {
+          div {
+            margin: 0.3rem 0 0.3rem 0;
+            font-size: 1.3rem;
+            svg {
+              color: rgb(41, 128, 185);
+              margin-right: 0.7rem;
+            }
+          }
+        }
+        @media all and (max-width: 600px) {
+          .RoomInfoAlignBox {
+            display: flex;
+          }
+          .RoomInfoAlignBox > div {
+            margin: 0.3rem 1rem 0.3rem 1rem;
+          }
+        }
+      }
+
+      .CreateTableBox {
+        display: flex;
+        flex: 3 0 0;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+
+        .CreateReserveTable {
+          width: 100%;
+          height: 2.2rem;
+          border-collapse: collapse;
+
+          td {
+            width: 5%;
+            border-top: 0px;
+            border-bottom: 5px solid rgb(224, 224, 224);
+          }
+
+          tr > td:nth-child(odd) {
+            border-right: 2px solid rgb(224, 224, 224);
+          }
+
+          tr > td:nth-child(even) {
+            border-right: 1px dotted rgb(224, 224, 224);
+          }
+
+          tr > td:first-child {
+            border-left: 0px;
+            border-bottom: 0px;
+          }
+
+          tr > td:last-child {
+            border-right: 0px;
+            border-bottom: 0px;
+          }
+
+          .reservedTd {
+            background-color: skyblue;
+          }
+        }
+
+        .CreateTimeTable {
+          width: 100%;
+          margin-top: 0.5rem;
+
+          border-collapse: collapse;
+          text-align: center;
+          color: rgb(95, 95, 95);
+          font-size: 1.2rem;
+          font-weight: bold;
+
+          td {
+            width: 10%;
+          }
+        }
+      }
+    }
+
+    @media all and (max-width: 600px) {
+      .CreateRoomBox {
+        height: 20rem;
+        flex-direction: column;
+      }
+      .RoomNameBox {
+        order: 1;
+      }
+      .CreateRoomInfoBox {
+        order: 2;
+      }
+      .CreateTableBox {
+        order: 3;
+      }
+    }
+  }
+}

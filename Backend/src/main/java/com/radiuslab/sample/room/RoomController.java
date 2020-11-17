@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/room")
 public class RoomController {
-	
+
 	Logger LOGGER = LoggerFactory.getLogger(RoomController.class);
-	
+
 	@Autowired
 	private RoomService roomService;
 
@@ -24,7 +24,7 @@ public class RoomController {
 	@GetMapping
 	public ResponseEntity<List<Room>> findAll() {
 		List<Room> roomList = this.roomService.findAll();
-		
+
 		return new ResponseEntity<List<Room>>(roomList, HttpStatus.OK);
 	}
 

@@ -10,7 +10,6 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -27,14 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.radiuslab.sample.commons.MailService;
 import com.radiuslab.sample.reserve.validator.ReserveTimeValidator;
 import com.radiuslab.sample.reserve.validator.ReserveValidator;
-import com.radiuslab.sample.roomItem.RoomItem;
-import com.radiuslab.sample.roomItem.RoomItemService;
 
 @RestController
 @RequestMapping("/api/reserve")
 public class ReserveController {
 	Logger LOGGER = LoggerFactory.getLogger(ReserveController.class);
-	
+
 	@Autowired
 	private ReserveService reserveService;
 
@@ -43,9 +40,6 @@ public class ReserveController {
 
 	@Autowired
 	private ReserveValidator reserveValidator;
-	
-	@Autowired
-	private RoomItemService roomItemService;
 
 	@Autowired
 	private MailService mailService;
@@ -77,7 +71,7 @@ public class ReserveController {
 
 	// 예약수정
 	@PutMapping
-	public ResponseEntity update(@Valid @RequestBody ReserveDto dto, Errors errors) {
+	public ResponseEntity<Object> update(@Valid @RequestBody ReserveDto dto, Errors errors) {
 		if (dto.getReserveId() == null) {
 			errors.rejectValue("reserveId", "NotNull", "must not be null");
 		}
@@ -179,5 +173,5 @@ public class ReserveController {
 		URI uri = linkTo(ReserveController.class).slash(res.getReserveId()).toUri();
 		return ResponseEntity.created(uri).body(res);
 	}
-	
+
 }
