@@ -42,6 +42,11 @@ $desktop: 1400px;
 //     border: 1px solid rgb(189, 202, 207);
 // }
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 html {
   font-size: 62.5%;
   font-family: "NanumSquareRound";
@@ -57,7 +62,6 @@ html {
 body {
   display: flex;
   justify-content: center;
-  align-content: center;
 }
 
 #root {
@@ -193,9 +197,9 @@ body {
         display: flex;
         align-items: center;
         svg {
-          width:25px; height: 25px;
+          width: 25px;
+          height: 25px;
           margin-right: 1rem;
-
         }
       }
       @media all and (max-width: 1300px) {
@@ -207,7 +211,8 @@ body {
         display: flex;
         align-items: center;
         svg {
-          width:25px; height: 25px;
+          width: 25px;
+          height: 25px;
           margin-left: 1rem;
           text-align: center;
         }

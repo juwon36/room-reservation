@@ -1,15 +1,21 @@
-import "./App.scss";
+import React from "react";
+import { BrowserRouter, Route } from "react-router-dom";
+import Daily from "./Routes/Daily";
+import Monthly from "./Routes/Monthly";
 import TitleBox from "./Components/Title/TitleBox";
-import DateBox from "./Components/Date/DateBox";
-import ConferenceRoomsBox from "./Components/ConferenceRoom/ConferenceRoomsBox";
+import "./App.scss";
 
 function App() {
   return (
-    <div className="App bd">
-      <TitleBox />
-      <DateBox />
-      <ConferenceRoomsBox />
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <TitleBox />
+        <Route path="/" exact={true} component={Daily} />
+        <Route path="/month" component={Monthly} />
+        {/* <Route path="/reserve" component={} />
+      <Route path="/update" component={} /> */}
+      </div>
+    </BrowserRouter>
   );
 }
 
