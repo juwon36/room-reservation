@@ -1,31 +1,35 @@
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
 
-function CreateDate({ dateData, state }) {
+function CreateDate({ data, state, onClick }) {
   let stateSpan = {
-    pre: (
+    pre:
       <span className="CreateDate-pre">
-        <IoIosArrowBack />
-        {/* <FontAwesomeIcon icon={faArrowCircleLeft} /> */}
-        <span>{dateData}</span>
-      </span>
-    ),
-    today: (
+        <IoIosArrowBack onClick={onClick} />
+        <span>{data}</span>
+      </span>,
+    today:
       <span className="CreateDate-today">
-        <span className="WebTodayDate">{dateData[0]}</span>
-        <strong> {dateData[1]}</strong>
-        <span className="MobileTodayDate">{dateData[2]}</span>
+        <span className="WebTodayDate">{data[0]}</span>
+        <strong> {data[2]} </strong >
+        <span className="MobileTodayDate">{data[1]}</span>
       </span>
-    ),
-    post: (
+    ,
+    post:
       <span className="CreateDate-post">
-        <span>{dateData}</span>
-        <IoIosArrowForward />
+        <span>{data}</span>
+        <IoIosArrowForward onClick={onClick} />
       </span>
-    ),
-  };
+  }
 
-  return <div className="CreateDate">{stateSpan[state]}</div>;
+
+  return (
+    <div className="CreateDate">
+      {
+        stateSpan[state]
+      }
+    </div>
+  );
 }
 
 export default CreateDate;
