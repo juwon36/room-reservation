@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import moment from "moment";
-import "moment/locale/ko";
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko'
 import useInterval from "./useInterval";
 
 function TitleBox() {
-  const nowTime = moment().format("HH:mm:ss");
+  const nowTime = dayjs().format("HH:mm:ss");
   const [seconds, setSeconds] = useState(nowTime);
 
   // useInterval
   useInterval(() => {
-    setSeconds(moment().format("HH:mm:ss"));
+    setSeconds(dayjs().format("HH:mm:ss"));
   }, 1000);
 
   return (
